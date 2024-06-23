@@ -552,7 +552,8 @@ public class Mod : ModBase // <= Do not Remove.
                 targetResult.EffectsObjid = sourceEffect; // Does it this way instead of sourceHex to preserve Effect Swap changes
             }
 
-            if (Enum.IsDefined(typeof(FerryWeaponObjId), sourceHex) && Enum.IsDefined(typeof(FerryWeaponObjId), targetHex)) // If both weapons are from Ferry
+            if ((Enum.IsDefined(typeof(FerryWeaponObjId), sourceHex) && Enum.IsDefined(typeof(FerryWeaponObjId), targetHex))
+                || (Enum.IsDefined(typeof(SeofonWeaponObjId), sourceHex) && Enum.IsDefined(typeof(SeofonWeaponObjId), targetHex))) // If both weapons are from Ferry, or both are from Seofon
             {
                 ProcessCallSelector(ObjIdToModelId(sourceHex), ObjIdToModelId(targetHex));
             }
@@ -815,37 +816,62 @@ public class Mod : ModBase // <= Do not Remove.
             using var ms = new MemoryStream(file);
             XmlDocument xmlDoc = XmlBin.Read(ms);
 
+            var root = xmlDoc["root"];
+            string baseString;
             char targetSuffix;
 
             if (WeaponEffects.FerryCallSelectorSuffixes().ContainsKey(targetName))
             {
                 targetSuffix = WeaponEffects.FerryCallSelectorSuffixes()[targetName];
-            }
-            else // Add Seofon and Sandalphon here eventually if necessary
-            {
-                _logger.WriteLine("Something went wrong with ProcessCallSelector, no matching key for target in dictionary");
-                return;
-            }
 
-            var root = xmlDoc["root"];
-            foreach (XmlNode node in root.ChildNodes)
-            {
-                if (node.Attributes["ObjId"].Value.Equals(sourceName, StringComparison.OrdinalIgnoreCase))
+                foreach (XmlNode node in root.ChildNodes)
                 {
-                    string baseString = node.Attributes["EstId"].Value[..^1]; // Source string without the last character
-                    char sourceSuffix = node.Attributes["EstId"].Value[^1]; // Last character of source string
-
-                    if (sourceSuffix != targetSuffix)
+                    if (node.Attributes["ObjId"].Value.Equals(sourceName, StringComparison.OrdinalIgnoreCase))
                     {
+                        baseString = node.Attributes["EstId"].Value[..^1]; // Source string without the last character
+                        char sourceSuffix = node.Attributes["EstId"].Value[^1]; // Last character of source string
+
+                        if (sourceSuffix != targetSuffix)
+                        {
 #if DEBUG_DEFAULT || DEBUG_NORESTRICTIONS
                         _logger.WriteLine($"Replacing {node.Attributes["ObjId"].Value} node's EstId {node.Attributes["EstId"].Value} with {baseString}{targetSuffix}");
 #endif
 
-                        node.Attributes["EstId"].Value = $"{baseString}{targetSuffix}";
+                            node.Attributes["EstId"].Value = $"{baseString}{targetSuffix}";
 
+                            continue;
+                        }
+                    }
+                }
+            }
+            else if (WeaponEffects.SeofonCallSelector().ContainsKey(targetName))
+            {
+                foreach (XmlNode node in root.ChildNodes)
+                {
+                    if (node.Attributes["ObjId"].Value.Equals(sourceName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        if (node.Attributes["EstId"].Value[0] == '1') // This separation is necessary because Seofon's CallSelector effects have 2 patterns they follow, one starts with 1 and the other with 7
+                        {
+                            baseString = node.Attributes["EstId"].Value[..2]; // Source string without the last character
+                            targetSuffix = WeaponEffects.SeofonCallSelector()[targetName]['1'];
+
+                            node.Attributes["EstId"].Value = $"{baseString}{targetSuffix}{node.Attributes["EstId"].Value[^1]}";
+                        }
+                        else if (node.Attributes["EstId"].Value[0] == '7')
+                        {
+                            baseString = node.Attributes["EstId"].Value[..^1];
+                            targetSuffix = WeaponEffects.SeofonCallSelector()[targetName]['7'];
+
+                            node.Attributes["EstId"].Value = $"{baseString}{targetSuffix}";
+                        }
                         continue;
                     }
                 }
+            }
+            else // Add Sandalphon here eventually if necessary
+            {
+                _logger.WriteLine("Something went wrong with ProcessCallSelector, no matching key for target in dictionary");
+                return;
             }
 
             using var outputXmlStream = new MemoryStream();

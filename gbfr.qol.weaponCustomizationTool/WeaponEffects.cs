@@ -171,6 +171,56 @@ namespace gbfr.qol.weaponCustomizationTool
             return ferryAttackEffects;
         }
 
+        /// <summary>
+        /// First key is the weapon ID, either wp2200 or wp2206.<br />
+        /// Key in inner dictionary refers to the first character in the EstId value.<br />
+        /// Value in inner dictionary refers to:<br />
+        /// ⠀⠀Third character in EstId if key = 1<br />
+        /// ⠀⠀Last character in EstId if key = 7
+        /// </summary> // Using whitespace character '⠀' above for indents
+        public static Dictionary<string, Dictionary<char, char>> SeofonCallSelector()
+        {
+            Dictionary<string, Dictionary<char, char>> seofonCallSelector = new ()
+            {
+                { 
+                    "wp2200", // Defender weapon
+                    new Dictionary<char, char>()
+                    {
+                        {
+                            '1', '5'
+                        },
+                        {
+                            '7', '0'
+                        },
+                        //"1050",
+                        //"1055",
+                        //"1056",
+                        //"7510",
+                        //"7610",
+                    }
+                },
+                {
+                    "wp2206", // Ascension weapon
+                    new Dictionary<char, char>()
+                    {
+                        {
+                            '1', '6'
+                        },
+                        {
+                            '7', '1'
+                        },
+                        //"1060",
+                        //"1065",
+                        //"1066",
+                        //"7511",
+                        //"7611",
+                    }
+                }
+            };
+
+            return seofonCallSelector;
+        }
+
         public static Dictionary<string, List<string>> EffectDictionary()// => effectFiles = new()
         {
             Dictionary<string, List<string>> effectFiles = new Dictionary<string, List<string>>()
