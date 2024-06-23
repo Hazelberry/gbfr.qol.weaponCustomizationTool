@@ -1,0 +1,24 @@
+// all FlatSharp FBS attributes start with the 'fs_' prefix.
+attribute "fs_serializer";
+attribute "fs_sortedVector";
+
+namespace GBFRDataTools.FlatBuffers;
+
+table Info
+{
+    search_objid_key:uint(key); // Used for bsearch. All entries must be ordered using this.
+    unk_objid_2:uint;
+    model_objid:uint;
+    unk_objid_4:uint;
+    effects_objid:uint;
+    unk_objid_6:uint;
+    physics_objid:uint;
+    unk_objid_8:uint;
+}
+
+table ObjReadAppend (fs_serializer) 
+{
+    Entries:[Info](fs_sortedVector);
+}
+
+root_type ObjReadAppend;

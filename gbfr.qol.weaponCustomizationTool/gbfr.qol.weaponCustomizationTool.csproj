@@ -1,0 +1,89 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0-windows7.0</TargetFramework>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+		<LangVersion>11.0</LangVersion>
+		<Nullable>annotations</Nullable>
+		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+		<ImplicitUsings>enable</ImplicitUsings>
+
+		<!-- IL Trimming Support for Framework Dependent Apps. Unofficial.
+         If you set this to true, trimming will be enabled when you publish the mod.
+         Test trimming with: `BuildLinked.ps1` in PowerShell. -->
+		<ReloadedILLink>false</ReloadedILLink>
+		<OutputType>Library</OutputType>
+		<Configurations>Default;NoRestrictions;Debug_NoRestrictions;Debug_Default</Configurations>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)'=='Default'Or'$(Configuration)'=='NoRestrictions'">
+		<Optimize>True</Optimize>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)'=='Default'Or'$(Configuration)'=='Debug_Default'">
+		<OutputPath>$(RELOADEDIIMODS)/gbfr.qol.weaponCustomizationTool</OutputPath>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)'=='NoRestrictions'Or'$(Configuration)'=='Debug_NoRestrictions'">
+		<OutputPath>$(RELOADEDIIMODS)/gbfr.qol.weaponCustomizationToolNoRestrictions</OutputPath>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ReloadedLinkRoots Include="gbfr.qol.weaponCustomizationTool" />
+		<!-- Add assemblies to be trimmed. You might need to add their dependencies too!  -->
+		<!-- <ReloadedLinkAssemblies Include="Reloaded.Memory" /> -->
+	</ItemGroup>
+
+	<Import Project="Reloaded.Trimming.targets" />
+	<Import Project="Reloaded.Checks.targets" />
+
+	<ItemGroup>
+		<None Remove="ModConfigDefault.json" />
+		<None Remove="ModConfigNoRestrictions.json" />
+		<None Remove="BuildLinked.ps1" />
+		<None Remove="Publish.ps1" />
+		<None Remove="Reloaded.Checks.targets" />
+		<None Remove="Reloaded.Trimming.targets" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(Configuration)'=='Default'Or'$(Configuration)'=='Debug_Default'">
+		<Content Include="ModConfigDefault.json">
+			<Link>ModConfig.json</Link>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<None Update="PreviewDefault.png">
+			<link>Preview.png</link>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(Configuration)'=='NoRestrictions'Or'$(Configuration)'=='Debug_NoRestrictions'">
+		<Content Include="ModConfigNoRestrictions.json">
+			<link>ModConfig.json</link>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<None Update="PreviewNoRestrictions.png">
+			<link>Preview.png</link>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="FlatSharp.Compiler" Version="7.7.0">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="FlatSharp.Runtime" Version="7.7.0" />
+		<PackageReference Include="GBFRDataTools.Files" Version="1.0.0" />
+		<PackageReference Include="gbfrelink.utility.manager.Interfaces" Version="1.0.1" />
+		<PackageReference Include="Reloaded.Mod.Interfaces" Version="2.4.0" />
+		<PackageReference Include="Syroot.BinaryData" Version="5.2.2" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<FlatSharpSchema Include="ObjReadInfo.fbs" />
+		<FlatSharpSchema Include="MInfo_ModelInfo.fbs" />
+	</ItemGroup>
+
+</Project>

@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.35004.147
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "gbfr.qol.weaponCustomizationTool", "gbfr.qol.weaponCustomizationTool\gbfr.qol.weaponCustomizationTool.csproj", "{5ACB84D3-DF87-408D-8AD2-E2F341BD971B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug_Default|Any CPU = Debug_Default|Any CPU
+		Debug_NoRestrictions|Any CPU = Debug_NoRestrictions|Any CPU
+		Default|Any CPU = Default|Any CPU
+		NoRestrictions|Any CPU = NoRestrictions|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5ACB84D3-DF87-408D-8AD2-E2F341BD971B}.Debug_Default|Any CPU.ActiveCfg = Debug_Default|Any CPU
+		{5ACB84D3-DF87-408D-8AD2-E2F341BD971B}.Debug_Default|Any CPU.Build.0 = Debug_Default|Any CPU
+		{5ACB84D3-DF87-408D-8AD2-E2F341BD971B}.Debug_NoRestrictions|Any CPU.ActiveCfg = Debug_NoRestrictions|Any CPU
+		{5ACB84D3-DF87-408D-8AD2-E2F341BD971B}.Debug_NoRestrictions|Any CPU.Build.0 = Debug_NoRestrictions|Any CPU
+		{5ACB84D3-DF87-408D-8AD2-E2F341BD971B}.Default|Any CPU.ActiveCfg = Default|Any CPU
+		{5ACB84D3-DF87-408D-8AD2-E2F341BD971B}.Default|Any CPU.Build.0 = Default|Any CPU
+		{5ACB84D3-DF87-408D-8AD2-E2F341BD971B}.NoRestrictions|Any CPU.ActiveCfg = NoRestrictions|Any CPU
+		{5ACB84D3-DF87-408D-8AD2-E2F341BD971B}.NoRestrictions|Any CPU.Build.0 = NoRestrictions|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {09B6F021-5D40-411C-B156-877840F5C0E8}
+	EndGlobalSection
+EndGlobal

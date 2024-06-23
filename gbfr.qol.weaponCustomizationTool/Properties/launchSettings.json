@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "gbfr.qol.weaponCustomizationTool": {
+      "commandName": "Project"
+    },
+    "Profile 1": {
+      "commandName": "Executable",
+      "executablePath": "D:\\Games\\SteamLibrary\\steamapps\\common\\Granblue Fantasy Relink\\granblue_fantasy_relink.exe"
+    }
+  }
+}
