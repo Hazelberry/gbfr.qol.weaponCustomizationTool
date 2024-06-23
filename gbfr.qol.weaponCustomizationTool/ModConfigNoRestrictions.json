@@ -2,7 +2,7 @@
   "ModId": "gbfr.qol.weaponCustomizationToolNoRestrictions",
   "ModName": "Weapon Customization Tool - No Restrictions",
   "ModAuthor": "Hazelberry, Nenkai",
-  "ModVersion": "1.0.0",
+  "ModVersion": "1.0.1",
   "ModDescription": "Allows full control over weapon model swapping and effects, including using other characters' weapons as skins. Keep in mind glow effects may not line up with other models, such as with Tweyen's bows. (Use 'Configure' on this mod to customize options)",
   "ModDll": "gbfr.qol.weaponCustomizationTool.dll",
   "ModIcon": "Preview.png",
