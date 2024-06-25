@@ -41,6 +41,8 @@ public class Mod : ModBase // <= Do not Remove.
     /// Provides access to this mod's base configuration.
     /// </summary>
     private Config _configuration;
+
+    #region Character Configs
     private readonly CaptainConfig _captain;
     private readonly KatalinaConfig _katalina;
     private readonly RackamConfig _rackam;
@@ -63,21 +65,22 @@ public class Mod : ModBase // <= Do not Remove.
     private readonly SandalphonConfig _sandalphon;
     private readonly SeofonConfig _seofon;
     private readonly TweyenConfig _tweyen;
+    #endregion
 
     /// <summary>
     /// The configuration of the currently executing mod.
     /// </summary>
     private readonly IModConfig _modConfig;
 
-    private WeakReference<IDataManager> _dataManagerRef;
+    private readonly WeakReference<IDataManager> _dataManagerRef;
 
     private ObjReadAppend _objRead;
 
     private ModelInfo _modelInfo;
 
-    private Dictionary<string, byte[]> _originalFiles = new();
+    private readonly Dictionary<string, byte[]> _originalFiles = [];
 
-    private Dictionary<string, byte[]> _workingFiles = new();
+    private readonly Dictionary<string, byte[]> _workingFiles = [];
 
     public Mod(CustomContext context)
     {
@@ -86,6 +89,7 @@ public class Mod : ModBase // <= Do not Remove.
         _owner = context.Owner;
         _configuration = context.Configuration;
         _modConfig = context.ModConfig;
+        #region Character config contexts
         _captain = context.CaptainModConfig;
         _katalina = context.KatalinaModConfig;
         _rackam = context.RackamModConfig;
@@ -108,6 +112,7 @@ public class Mod : ModBase // <= Do not Remove.
         _sandalphon = context.SandalphonModConfig;
         _seofon = context.SeofonModConfig;
         _tweyen = context.TweyenModConfig;
+        #endregion
 
 #if DEBUG_DEFAULT || DEBUG_NORESTRICTIONS
         // NOTE (Nenkai): Only works with unpacked exe (use steamless)
@@ -131,217 +136,8 @@ public class Mod : ModBase // <= Do not Remove.
         if (!_dataManagerRef.TryGetTarget(out IDataManager manager))
             return;
 
-        Dictionary<uint, uint> modelSwapList = new()
-        {
-            { (uint)AllWeaponObjId.Captain_Travellers_Sword, (uint)_captain.Swap_TravellersSword                        },
-            { (uint)AllWeaponObjId.Captain_Durandal, (uint)_captain.Swap_Durandal                                       },
-            { (uint)AllWeaponObjId.Captain_Sword_of_Eos, (uint)_captain.Swap_SwordofEos                                 },
-            { (uint)AllWeaponObjId.Captain_Albacore_Blade, (uint)_captain.Swap_AlbacoreBlade                            },
-            { (uint)AllWeaponObjId.Captain_Ultima_Sword, (uint)_captain.Swap_UltimaSword                                },
-            { (uint)AllWeaponObjId.Captain_Seven_Star_Sword, (uint)_captain.Swap_SevenStarSword                         },
-            { (uint)AllWeaponObjId.Captain_Partenza, (uint)_captain.Swap_Partenza                                       },
-
-            { (uint)AllWeaponObjId.Katalina_Rukalsa, (uint)_katalina.Swap_Rukalsa                                       },
-            { (uint)AllWeaponObjId.Katalina_Flame_Rapier, (uint)_katalina.Swap_FlameRapier                              },
-            { (uint)AllWeaponObjId.Katalina_Murgleis, (uint)_katalina.Swap_Murgleis                                     },
-            { (uint)AllWeaponObjId.Katalina_Luminiera_Sword_Omega, (uint)_katalina.Swap_LuminieraSwordOmega             },
-            { (uint)AllWeaponObjId.Katalina_Ephemeron, (uint)_katalina.Swap_Ephemeron                                   },
-            { (uint)AllWeaponObjId.Katalina_Blutgang, (uint)_katalina.Swap_Blutgang                                     },
-
-            { (uint)AllWeaponObjId.Rackam_Flintspike, (uint)_rackam.Swap_Flintspike                                     },
-            { (uint)AllWeaponObjId.Rackam_Wheellock_Axe, (uint)_rackam.Swap_WheellockAxe                                },
-            { (uint)AllWeaponObjId.Rackam_Benedia, (uint)_rackam.Swap_Benedia                                           },
-            { (uint)AllWeaponObjId.Rackam_Tiamat_Bolt_Omega, (uint)_rackam.Swap_TiamatBoltOmega                         },
-            { (uint)AllWeaponObjId.Rackam_Stormcloud, (uint)_rackam.Swap_Stormcloud                                     },
-            { (uint)AllWeaponObjId.Rackam_Freikugel, (uint)_rackam.Swap_Freikugel                                       },
-
-            { (uint)AllWeaponObjId.Io_Little_Witch_Scepter, (uint)_io.Swap_LittleWitchScepter                           },
-            { (uint)AllWeaponObjId.Io_Zhezl, (uint)_io.Swap_Zhezl                                                       },
-            { (uint)AllWeaponObjId.Io_Gambanteinn, (uint)_io.Swap_Gambanteinn                                           },
-            { (uint)AllWeaponObjId.Io_Colossus_Cane_Omega, (uint)_io.Swap_ColossusCaneOmega                             },
-            { (uint)AllWeaponObjId.Io_Tupsimati, (uint)_io.Swap_Tupsimati                                               },
-            { (uint)AllWeaponObjId.Io_Caduceus, (uint)_io.Swap_Caduceus                                                 },
-
-            { (uint)AllWeaponObjId.Eugen_Dreyse, (uint)_eugen.Swap_Dreyse                                               },
-            { (uint)AllWeaponObjId.Eugen_Matchlock, (uint)_eugen.Swap_Matchlock                                         },
-            { (uint)AllWeaponObjId.Eugen_AK4A, (uint)_eugen.Swap_AK4A                                                   },
-            { (uint)AllWeaponObjId.Eugen_Leviathan_Muzzle, (uint)_eugen.Swap_LeviathanMuzzle                            },
-            { (uint)AllWeaponObjId.Eugen_Clarion, (uint)_eugen.Swap_Clarion                                             },
-            { (uint)AllWeaponObjId.Eugen_Draconic_Fire, (uint)_eugen.Swap_DraconicFire                                  },
-
-            { (uint)AllWeaponObjId.Rosetta_Egoism, (uint)_rosetta.Swap_Egoism                                           },
-            { (uint)AllWeaponObjId.Rosetta_Swordbreaker, (uint)_rosetta.Swap_Swordbreaker                               },
-            { (uint)AllWeaponObjId.Rosetta_Love_Eternal, (uint)_rosetta.Swap_LoveEternal                                },
-            { (uint)AllWeaponObjId.Rosetta_Rose_Crystal_Knife, (uint)_rosetta.Swap_RoseCrystalKnife                     },
-            { (uint)AllWeaponObjId.Rosetta_Cortana, (uint)_rosetta.Swap_Cortana                                         },
-            { (uint)AllWeaponObjId.Rosetta_Dagger_of_Bahamut_Coda, (uint)_rosetta.Swap_DaggerofBahamutCoda              },
-
-            { (uint)AllWeaponObjId.Ferry_Geisterpeitche, (uint)_ferry.Swap_Geisterpeitche                               },
-            { (uint)AllWeaponObjId.Ferry_Leather_Belt, (uint)_ferry.Swap_LeatherBelt                                    },
-            { (uint)AllWeaponObjId.Ferry_Ethereal_Lasher, (uint)_ferry.Swap_EtherealLasher                              },
-            { (uint)AllWeaponObjId.Ferry_Flame_Lit_Curl, (uint)_ferry.Swap_FlameLitCurl                                 },
-            { (uint)AllWeaponObjId.Ferry_Live_Wire, (uint)_ferry.Swap_LiveWire                                          },
-            { (uint)AllWeaponObjId.Ferry_Erinnerung, (uint)_ferry.Swap_Erinnerung                                       },
-
-            { (uint)AllWeaponObjId.Lancelot_Altachiara, (uint)_lancelot.Swap_Altachiara                                 },
-            { (uint)AllWeaponObjId.Lancelot_Hoarfrost_Blade_Persius, (uint)_lancelot.Swap_HoarfrostBladePersius         },
-            { (uint)AllWeaponObjId.Lancelot_Blanc_Comme_Neige, (uint)_lancelot.Swap_BlancCommeNeige                     },
-            { (uint)AllWeaponObjId.Lancelot_Vegalta, (uint)_lancelot.Swap_Vegalta                                       },
-            { (uint)AllWeaponObjId.Lancelot_Knight_of_Ice, (uint)_lancelot.Swap_KnightOfIce                             },
-            { (uint)AllWeaponObjId.Lancelot_Damascus_Knife, (uint)_lancelot.Swap_DamascusKnife                          },
-
-            { (uint)AllWeaponObjId.Vane_Alabarda, (uint)_vane.Swap_Alabarda                                             },
-            { (uint)AllWeaponObjId.Vane_Swan, (uint)_vane.Swap_Swan                                                     },
-            { (uint)AllWeaponObjId.Vane_Treuer_Krieger, (uint)_vane.Swap_TreuerKrieger                                  },
-            { (uint)AllWeaponObjId.Vane_Ukonvasara, (uint)_vane.Swap_Ukonvasara                                         },
-            { (uint)AllWeaponObjId.Vane_Blossom_Axe, (uint)_vane.Swap_BlossomAxe                                        },
-            { (uint)AllWeaponObjId.Vane_Mjolnir, (uint)_vane.Swap_Mjolnir                                               },
-
-            { (uint)PercivalWeaponObjId.Flamberge, (uint)_percival.Swap_Flamberge                                       },
-            { (uint)PercivalWeaponObjId.Lohengrin, (uint)_percival.Swap_Lohengrin                                       },
-            { (uint)PercivalWeaponObjId.Antwerp, (uint)_percival.Swap_Antwerp                                           },
-            { (uint)PercivalWeaponObjId.Joyeuse, (uint)_percival.Swap_Joyeuse                                           },
-            { (uint)PercivalWeaponObjId.Lord_of_Flames, (uint)_percival.Swap_LordOfFlames                               },
-            { (uint)PercivalWeaponObjId.Gottfried, (uint)_percival.Swap_Gottfried                                       },
-
-            { (uint)SiegfriedWeaponObjId.Integrity, (uint)_siegfried.Swap_Integrity                                     },
-            { (uint)SiegfriedWeaponObjId.Broadsword_of_Earth, (uint)_siegfried.Swap_BroadswordofEarth                   },
-            { (uint)SiegfriedWeaponObjId.Ascalon, (uint)_siegfried.Swap_Ascalon                                         },
-            { (uint)SiegfriedWeaponObjId.Hrunting, (uint)_siegfried.Swap_Hrunting                                       },
-            { (uint)SiegfriedWeaponObjId.Windhose, (uint)_siegfried.Swap_Windhose                                       },
-            { (uint)SiegfriedWeaponObjId.Balmung, (uint)_siegfried.Swap_Balmung                                         },
-
-            { (uint)CharlottaWeaponObjId.Claiomh_Solais, (uint)_charlotta.Swap_ClaiomhSolais                            },
-            { (uint)CharlottaWeaponObjId.Arondight, (uint)_charlotta.Swap_Arondight                                     },
-            { (uint)CharlottaWeaponObjId.Claidheamh_Soluis, (uint)_charlotta.Swap_ClaidheamhSoluis                      },
-            { (uint)CharlottaWeaponObjId.Ushumgal, (uint)_charlotta.Swap_Ushumgal                                       },
-            { (uint)CharlottaWeaponObjId.Sahrivar, (uint)_charlotta.Swap_Sahrivar                                       },
-            { (uint)CharlottaWeaponObjId.Galatine, (uint)_charlotta.Swap_Galatine                                       },
-
-            { (uint)YodarhaWeaponObjId.Kiku_Ichimonji, (uint)_yodarha.Swap_KikuIchimonji                                },
-            { (uint)YodarhaWeaponObjId.Asura, (uint)_yodarha.Swap_Asura                                                 },
-            { (uint)YodarhaWeaponObjId.Fudo_Kuniyuki, (uint)_yodarha.Swap_FudoKuniyuki                                  },
-            { (uint)YodarhaWeaponObjId.Higurashi, (uint)_yodarha.Swap_Higurashi                                         },
-            { (uint)YodarhaWeaponObjId.Xeno_Phantom_Demon_Blade, (uint)_yodarha.Swap_XenoPhantomDemonBlade              },
-            { (uint)YodarhaWeaponObjId.Swordfish, (uint)_yodarha.Swap_Swordfish                                         },
-
-            { (uint)NarmayaWeaponObjId.Nakamaki_Nodachi, (uint)_narmaya.Swap_NakamakiNodachi                            },
-            { (uint)NarmayaWeaponObjId.Kotetsu, (uint)_narmaya.Swap_Kotetsu                                             },
-            { (uint)NarmayaWeaponObjId.Venustas, (uint)_narmaya.Swap_Venustas                                           },
-            { (uint)NarmayaWeaponObjId.Flourithium_Blade, (uint)_narmaya.Swap_Flourithium_Blade                         },
-            { (uint)NarmayaWeaponObjId.Blade_of_Purification, (uint)_narmaya.Swap_BladeofPurification                   },
-            { (uint)NarmayaWeaponObjId.Ameno_Habakiri, (uint)_narmaya.Swap_AmenoHabakiri                                },
-
-            { (uint)GhandagozaWeaponObjId.Brahma_Gauntlet, (uint)_ghandagoza.Swap_BrahmaGauntlet                        },
-            { (uint)GhandagozaWeaponObjId.Rope_Knuckles, (uint)_ghandagoza.Swap_RopeKnuckles                            },
-            { (uint)GhandagozaWeaponObjId.Crimson_Finger, (uint)_ghandagoza.Swap_CrimsonFinger                          },
-            { (uint)GhandagozaWeaponObjId.Golden_Fists_of_Ura, (uint)_ghandagoza.Swap_GoldenFistsOfUra                  },
-            { (uint)GhandagozaWeaponObjId.Arkab, (uint)_ghandagoza.Swap_Arkab                                           },
-            { (uint)GhandagozaWeaponObjId.Sky_Piercer, (uint)_ghandagoza.Swap_SkyPiercer                                },
-
-            { (uint)ZetaWeaponObjId.Spear_of_Arvess, (uint)_zeta.Swap_SpearofArvess                                     },
-            { (uint)ZetaWeaponObjId.Sunspot_Spear, (uint)_zeta.Swap_Sunspot_Spear                                       },
-            { (uint)ZetaWeaponObjId.Brionac, (uint)_zeta.Swap_Brionac                                                   },
-            { (uint)ZetaWeaponObjId.Gisla, (uint)_zeta.Swap_Gisla                                                       },
-            { (uint)ZetaWeaponObjId.Huanglong_Spear, (uint)_zeta.Swap_HuanglongSpear                                    },
-            { (uint)ZetaWeaponObjId.Gae_Bulg, (uint)_zeta.Swap_GaeBulg                                                  },
-
-            { (uint)VaseragaWeaponObjId.Great_Scythe_Grynoth, (uint)_vaseraga.Swap_GreatScytheGrynoth                   },
-            { (uint)VaseragaWeaponObjId.Alsarav, (uint)_vaseraga.Swap_Alsarav                                           },
-            { (uint)VaseragaWeaponObjId.Wurtzite_Scythe, (uint)_vaseraga.Swap_WurtziteScythe                            },
-            { (uint)VaseragaWeaponObjId.Soul_Eater, (uint)_vaseraga.Swap_SoulEater                                      },
-            { (uint)VaseragaWeaponObjId.Cosmic_Scythe, (uint)_vaseraga.Swap_CosmicScythe                                },
-            { (uint)VaseragaWeaponObjId.Ereshkigal, (uint)_vaseraga.Swap_Ereshkigal                                     },
-
-            { (uint)CagliostroWeaponObjId.Magnum_Opus, (uint)_cagliostro.Swap_MagnumOpus                                },
-            { (uint)CagliostroWeaponObjId.Dream_Atlas, (uint)_cagliostro.Swap_DreamAtlas                                },
-            { (uint)CagliostroWeaponObjId.Transmigration_Tome, (uint)_cagliostro.Swap_TransmigrationTome                },
-            { (uint)CagliostroWeaponObjId.Sacred_Codex, (uint)_cagliostro.Swap_SacredCodex                              },
-            { (uint)CagliostroWeaponObjId.Arshivelle, (uint)_cagliostro.Swap_Arshivelle                                 },
-            { (uint)CagliostroWeaponObjId.Zosimos, (uint)_cagliostro.Swap_Zosimos                                       },
-
-            { (uint)IdWeaponObjId.Ragnarok, (uint)_id.Swap_Ragnarok                                                     },
-            { (uint)IdWeaponObjId.Aviaeth_Faussart, (uint)_id.Swap_AviaethFaussart                                      },
-            { (uint)IdWeaponObjId.Susanoo, (uint)_id.Swap_Susanoo                                                       },
-            { (uint)IdWeaponObjId.Premium_Sword, (uint)_id.Swap_PremiumSword                                            },
-            { (uint)IdWeaponObjId.Ecke_Sachs, (uint)_id.Swap_EckeSachs                                                  },
-            { (uint)IdWeaponObjId.Sword_of_Bahamut, (uint)_id.Swap_SwordofBahamut                                       },
-
-            { (uint)SandalphonWeaponObjId.Apprentice, (uint)_sandalphon.Swap_Apprentice                                 },
-            { (uint)SandalphonWeaponObjId.WorldEnder, (uint)_sandalphon.Swap_WorldEnder                                 },
-
-            { (uint)SeofonWeaponObjId.Sette_di_Spade, (uint)_seofon.Swap_SettediSpade                                   },
-            { (uint)SeofonWeaponObjId.Gateway_Star_Sword, (uint)_seofon.Swap_GatewayStarSword                           },
-
-            { (uint)TweyenWeaponObjId.Bow_of_Dismissal, (uint)_tweyen.Swap_BowofDismissal                               },
-            { (uint)TweyenWeaponObjId.Desolation_Crown_Bow, (uint)_tweyen.Swap_DesolationCrownBow                       },
-        };
-
-        Dictionary<uint, uint> effectSwapList = new()
-        {
-            { (uint)CaptainEffectWeaponObjId.Ascension, (uint)_captain.EffectSwap_SwordOfEos                            },
-            { (uint)CaptainEffectWeaponObjId.Terminus, (uint)_captain.EffectSwap_SevenStarSword                         },
-
-            { (uint)KatalinaEffectWeaponObjId.Ascension, (uint)_katalina.EffectSwap_Murgleis                            },
-            { (uint)KatalinaEffectWeaponObjId.Terminus, (uint)_katalina.EffectSwap_Blutgang                             },
-
-            { (uint)RackamEffectWeaponObjId.Ascension, (uint)_rackam.EffectSwap_Benedia                                 },
-            { (uint)RackamEffectWeaponObjId.Terminus, (uint)_rackam.EffectSwap_Freikugel                                },
-
-            { (uint)IoEffectWeaponObjId.Ascension, (uint)_io.EffectSwap_Gambanteinn                                     },
-            { (uint)IoEffectWeaponObjId.Terminus, (uint)_io.EffectSwap_Caduceus                                         },
-
-            { (uint)EugenEffectWeaponObjId.Ascension, (uint)_eugen.EffectSwap_AK4A                                      },
-            { (uint)EugenEffectWeaponObjId.Terminus, (uint)_eugen.EffectSwap_DraconicFire                               },
-
-            { (uint)RosettaEffectWeaponObjId.Ascension, (uint)_rosetta.EffectSwap_LoveEternal                           },
-            { (uint)RosettaEffectWeaponObjId.Flame, (uint)_rosetta.EffectSwap_Cortana                                   },
-            { (uint)RosettaEffectWeaponObjId.Terminus, (uint)_rosetta.EffectSwap_DaggerOfBahamutCoda                    },
-
-            { (uint)FerryEffectWeaponObjId.Ghostly, (uint)_ferry.EffectSwap_Geisterpeitche                              },
-            { (uint)FerryEffectWeaponObjId.Ascension, (uint)_ferry.EffectSwap_EtherealLasher                            },
-            { (uint)FerryEffectWeaponObjId.Flame, (uint)_ferry.EffectSwap_FlameLitCurl                                  },
-            { (uint)FerryEffectWeaponObjId.Electric, (uint)_ferry.EffectSwap_LiveWire                                },
-            { (uint)FerryEffectWeaponObjId.Terminus, (uint)_ferry.EffectSwap_Erinnerung                                 },
-
-            { (uint)LancelotEffectWeaponObjId.Ascension, (uint)_lancelot.EffectSwap_KnightOfIce                         },
-            { (uint)LancelotEffectWeaponObjId.Terminus, (uint)_lancelot.EffectSwap_DamascusKnife                        },
-
-            { (uint)VaneEffectWeaponObjId.Ascension, (uint)_vane.EffectSwap_TreuerKrieger                               },
-            { (uint)VaneEffectWeaponObjId.Terminus, (uint)_vane.EffectSwap_Mjolnir                                      },
-
-            { (uint)PercivalEffectWeaponObjId.Ascension, (uint)_percival.EffectSwap_LordOfFlames                        },
-            { (uint)PercivalEffectWeaponObjId.Terminus, (uint)_percival.EffectSwap_Gottfried                            },
-
-            { (uint)SiegfriedEffectWeaponObjId.Ascension, (uint)_siegfried.EffectSwap_Ascalon                           },
-            { (uint)SiegfriedEffectWeaponObjId.Terminus, (uint)_siegfried.EffectSwap_Balmung                            },
-
-            { (uint)CharlottaEffectWeaponObjId.Ascension, (uint)_charlotta.EffectSwap_Claidheamh                        },
-            { (uint)CharlottaEffectWeaponObjId.Terminus, (uint)_charlotta.EffectSwap_Galatine                           },
-
-            { (uint)YodarhaEffectWeaponObjId.Ascension, (uint)_yodarha.EffectSwap_FudoKuniyuki                          },
-            { (uint)YodarhaEffectWeaponObjId.Terminus, (uint)_yodarha.EffectSwap_Swordfish                              },
-
-            { (uint)NarmayaEffectWeaponObjId.Ascension, (uint)_narmaya.EffectSwap_Venustas                              },
-            { (uint)NarmayaEffectWeaponObjId.Terminus, (uint)_narmaya.EffectSwap_AmenoHabakiri                          },
-
-            { (uint)GhandagozaEffectWeaponObjId.Ascension, (uint)_ghandagoza.EffectSwap_GoldenFistsOfUra                },
-            { (uint)GhandagozaEffectWeaponObjId.Terminus, (uint)_ghandagoza.EffectSwap_SkyPiercer                       },
-
-            { (uint)ZetaEffectWeaponObjId.Ascension, (uint)_zeta.EffectSwap_Brionac                                     },
-            { (uint)ZetaEffectWeaponObjId.Terminus, (uint)_zeta.EffectSwap_GaeBulg                                      },
-
-            { (uint)VaseragaEffectWeaponObjId.Ascension, (uint)_vaseraga.EffectSwap_WurtziteScythe                      },
-            { (uint)VaseragaEffectWeaponObjId.Terminus, (uint)_vaseraga.EffectSwap_Ereshkigal                           },
-
-            { (uint)CagliostroEffectWeaponObjId.Ascension, (uint)_cagliostro.EffectSwap_TransmigrationTome              },
-            { (uint)CagliostroEffectWeaponObjId.Terminus, (uint)_cagliostro.EffectSwap_Zosimos                          },
-
-            { (uint)IdEffectWeaponObjId.Ascension, (uint)_id.EffectSwap_Susanoo                                         },
-            { (uint)IdEffectWeaponObjId.Terminus, (uint)_id.EffectSwap_PrimalSwordOfBahamut                             },
-
-            // Intentionally no Sandalphon, Seofon, or Tweyen since they only have 1 effect each
-        };
+        var modelSwapMap = GetModelSwapMap();
+        var effectSwapMap = GetEffectSwapMap();
 
         string infoFile = "system/objread/info.objread";
         if (!manager.FileExists(infoFile, includeExternal: false))
@@ -350,10 +146,10 @@ public class Mod : ModBase // <= Do not Remove.
         byte[] fileBytes = manager.GetArchiveFile(infoFile);
         _objRead = ObjReadAppend.Serializer.Parse(fileBytes);
 
-        foreach (var weapon in effectSwapList)  // Must come before ProcessModels to ensure effect swapping works correctly
+        foreach (var weapon in effectSwapMap)  // Must come before ProcessModels to ensure effect swapping works correctly
             ProcessEffectSwap(weapon.Key, weapon.Value);
 
-        foreach (var weapon in modelSwapList)
+        foreach (var weapon in modelSwapMap)
             ProcessModels(weapon.Key, weapon.Value);
 
         byte[] outputBuffer = new byte[ObjReadAppend.Serializer.GetMaxSize(_objRead)];
@@ -364,167 +160,101 @@ public class Mod : ModBase // <= Do not Remove.
 
         ///----------------------------------------------------------------------------///
 
-        Dictionary<string, WeaponEffectControlType> effectControlList = new() // Dynamic because some of Ferry's weapons + 1 of Rosetta's weapons use bool instead of WeaponEffectControlType
-        {
-            { ObjIdToModelId((uint)CaptainEffectWeaponObjId.Ascension), _captain.EffectControl_SwordOfEos               },
-            { ObjIdToModelId((uint)CaptainEffectWeaponObjId.Terminus), _captain.EffectControl_SevenStarSword            },
+        var effectControlMap = GetEffectControlMap();
 
-            { ObjIdToModelId((uint)KatalinaEffectWeaponObjId.Ascension), _katalina.EffectControl_Murgleis               },
-            { ObjIdToModelId((uint) KatalinaEffectWeaponObjId.Terminus), _katalina.EffectControl_Blutgang               },
-
-            { ObjIdToModelId((uint) RackamEffectWeaponObjId.Ascension), _rackam.EffectControl_Benedia                   },
-            { ObjIdToModelId((uint) RackamEffectWeaponObjId.Terminus), _rackam.EffectControl_Freikugel                  },
-
-            { ObjIdToModelId((uint) IoEffectWeaponObjId.Ascension), _io.EffectControl_Gambanteinn                       },
-            { ObjIdToModelId((uint) IoEffectWeaponObjId.Terminus), _io.EffectControl_Caduceus                           },
-
-            { ObjIdToModelId((uint) EugenEffectWeaponObjId.Ascension), _eugen.EffectControl_AK4A                        },
-            { ObjIdToModelId((uint) EugenEffectWeaponObjId.Terminus), _eugen.EffectControl_DraconicFire                 },
-
-            { ObjIdToModelId((uint) RosettaEffectWeaponObjId.Ascension), _rosetta.EffectControl_LoveEternal                         },
-            { ObjIdToModelId((uint) RosettaEffectWeaponObjId.Flame), (WeaponEffectControlType)_rosetta.EffectControl_Cortana        },
-            { ObjIdToModelId((uint) RosettaEffectWeaponObjId.Terminus), _rosetta.EffectControl_DaggerOfBahamutCoda                  },
-
-            { ObjIdToModelId((uint) FerryEffectWeaponObjId.Ghostly), (WeaponEffectControlType)_ferry.EffectControl_Geisterpeitche   },
-            { ObjIdToModelId((uint) FerryEffectWeaponObjId.Ascension), _ferry.EffectControl_EtherealLasher                          },
-            { ObjIdToModelId((uint) FerryEffectWeaponObjId.Flame), (WeaponEffectControlType)_ferry.EffectControl_FlameLitCurl       },
-            { ObjIdToModelId((uint) FerryEffectWeaponObjId.Electric), (WeaponEffectControlType)_ferry.EffectControl_LiveWire     },
-            { ObjIdToModelId((uint) FerryEffectWeaponObjId.Terminus), _ferry.EffectControl_Erinnerung                               },
-
-            { ObjIdToModelId((uint) LancelotEffectWeaponObjId.Ascension), _lancelot.EffectControl_KnightOfIce           },
-            { ObjIdToModelId((uint) LancelotEffectWeaponObjId.Terminus), _lancelot.EffectControl_DamascusKnife          },
-
-            { ObjIdToModelId((uint) VaneEffectWeaponObjId.Ascension), _vane.EffectControl_TreuerKrieger                 },
-            { ObjIdToModelId((uint) VaneEffectWeaponObjId.Terminus), _vane.EffectControl_Mjolnir                        },
-
-            { ObjIdToModelId((uint) PercivalEffectWeaponObjId.Ascension), _percival.EffectControl_LordOfFlames          },
-            { ObjIdToModelId((uint) PercivalEffectWeaponObjId.Terminus), _percival.EffectControl_Gottfried              },
-
-            { ObjIdToModelId((uint) SiegfriedEffectWeaponObjId.Ascension), _siegfried.EffectControl_Ascalon             },
-            { ObjIdToModelId((uint) SiegfriedEffectWeaponObjId.Terminus), _siegfried.EffectControl_Balmung              },
-
-            { ObjIdToModelId((uint) CharlottaEffectWeaponObjId.Ascension), _charlotta.EffectControl_Claidheamh          },
-            { ObjIdToModelId((uint) CharlottaEffectWeaponObjId.Terminus), _charlotta.EffectControl_Galatine             },
-
-            { ObjIdToModelId((uint) YodarhaEffectWeaponObjId.Ascension), _yodarha.EffectControl_FudoKuniyuki            },
-            { ObjIdToModelId((uint) YodarhaEffectWeaponObjId.Terminus), _yodarha.EffectControl_Swordfish                },
-
-            { ObjIdToModelId((uint) NarmayaEffectWeaponObjId.Ascension), _narmaya.EffectControl_Venustas                },
-            { ObjIdToModelId((uint) NarmayaEffectWeaponObjId.Terminus), _narmaya.EffectControl_AmenoHabakiri            },
-
-            { ObjIdToModelId((uint) GhandagozaEffectWeaponObjId.Ascension), _ghandagoza.EffectControl_GoldenFistsOfUra  },
-            { ObjIdToModelId((uint) GhandagozaEffectWeaponObjId.Terminus), _ghandagoza.EffectControl_SkyPiercer         },
-
-            { ObjIdToModelId((uint) ZetaEffectWeaponObjId.Ascension), _zeta.EffectControl_Brionac                       },
-            { ObjIdToModelId((uint) ZetaEffectWeaponObjId.Terminus), _zeta.EffectControl_GaeBulg                        },
-
-            { ObjIdToModelId((uint) VaseragaEffectWeaponObjId.Ascension), _vaseraga.EffectControl_WurtziteScythe        },
-            { ObjIdToModelId((uint) VaseragaEffectWeaponObjId.Terminus), _vaseraga.EffectControl_Ereshkigal             },
-
-            { ObjIdToModelId((uint) CagliostroEffectWeaponObjId.Ascension), _cagliostro.EffectControl_TransmigrationTome},
-            { ObjIdToModelId((uint) CagliostroEffectWeaponObjId.Terminus), _cagliostro.EffectControl_Zosimos            },
-
-            { ObjIdToModelId((uint) IdEffectWeaponObjId.Ascension), _id.EffectControl_Susanoo                           },
-            { ObjIdToModelId((uint) IdEffectWeaponObjId.Terminus), _id.EffectControl_PrimalSwordOfBahamut               },
-
-            { ObjIdToModelId((uint) SandalphonEffectWeaponObjId.Terminus), _sandalphon.EffectControl_WorldEnder         },
-
-            { ObjIdToModelId((uint) SeofonEffectWeaponObjId.Terminus), _seofon.EffectControl_GatewayStarSword           },
-
-            { ObjIdToModelId((uint) TweyenEffectWeaponObjId.Terminus), _tweyen.EffectControl_DesolationCrownBow         },
-        };
-
-        foreach (var weapon in effectControlList)
+        foreach (var weapon in effectControlMap)
             ProcessEffectControl(weapon.Key, weapon.Value);
 
         ///----------------------------------------------------------------------------///
 
-        Dictionary<uint, uint> captainIdList = new()
+        Dictionary<eObjId, eObjId> captainIdList = new()
         {
-            { (uint)AllWeaponObjId.Captain_Durandal, (uint)_captain.Swap_Durandal                               },
-            { (uint)AllWeaponObjId.Captain_Sword_of_Eos, (uint)_captain.Swap_SwordofEos                         },
-            { (uint)AllWeaponObjId.Captain_Albacore_Blade, (uint)_captain.Swap_AlbacoreBlade                    },
-            { (uint)AllWeaponObjId.Captain_Ultima_Sword, (uint)_captain.Swap_UltimaSword                        },
-            { (uint)AllWeaponObjId.Captain_Seven_Star_Sword, (uint)_captain.Swap_SevenStarSword                 },
-            { (uint)AllWeaponObjId.Captain_Partenza, (uint)_captain.Swap_Partenza                               },
+            { (eObjId)AllWeaponObjId.Captain_Durandal, (eObjId)_captain.Swap_Durandal                              },
+            { (eObjId)AllWeaponObjId.Captain_Sword_of_Eos, (eObjId)_captain.Swap_SwordofEos                        },
+            { (eObjId)AllWeaponObjId.Captain_Albacore_Blade, (eObjId)_captain.Swap_AlbacoreBlade                   },
+            { (eObjId)AllWeaponObjId.Captain_Ultima_Sword, (eObjId)_captain.Swap_UltimaSword                       },
+            { (eObjId)AllWeaponObjId.Captain_Seven_Star_Sword, (eObjId)_captain.Swap_SevenStarSword                },
+            { (eObjId)AllWeaponObjId.Captain_Partenza, (eObjId)_captain.Swap_Partenza                              },
         };
 
-        Dictionary<uint, uint> narmayaIdList = new()
+        Dictionary<eObjId, eObjId> narmayaIdList = new()
         {
-            { (uint)NarmayaWeaponObjId.Nakamaki_Nodachi, (uint)_narmaya.Swap_NakamakiNodachi                    },
-            { (uint)NarmayaWeaponObjId.Kotetsu, (uint)_narmaya.Swap_Kotetsu                                     },
-            { (uint)NarmayaWeaponObjId.Venustas, (uint)_narmaya.Swap_Venustas                                   },
-            { (uint)NarmayaWeaponObjId.Flourithium_Blade, (uint)_narmaya.Swap_Flourithium_Blade                 },
-            { (uint)NarmayaWeaponObjId.Blade_of_Purification, (uint)_narmaya.Swap_BladeofPurification           },
-            { (uint)NarmayaWeaponObjId.Ameno_Habakiri, (uint)_narmaya.Swap_AmenoHabakiri                        },
+            { (eObjId)AllWeaponObjId.Narmaya_Nakamaki_Nodachi, (eObjId)_narmaya.Swap_NakamakiNodachi               },
+            { (eObjId)AllWeaponObjId.Narmaya_Kotetsu, (eObjId)_narmaya.Swap_Kotetsu                                },
+            { (eObjId)AllWeaponObjId.Narmaya_Venustas, (eObjId)_narmaya.Swap_Venustas                              },
+            { (eObjId)AllWeaponObjId.Narmaya_Flourithium_Blade, (eObjId)_narmaya.Swap_Flourithium_Blade            },
+            { (eObjId)AllWeaponObjId.Narmaya_Blade_of_Purification, (eObjId)_narmaya.Swap_BladeofPurification      },
+            { (eObjId)AllWeaponObjId.Narmaya_Ameno_Habakiri, (eObjId)_narmaya.Swap_AmenoHabakiri                   },
         };
 
 
         foreach (var elem in captainIdList)
         {
-            if (elem.Key != elem.Value && (_captain.SheathSwapToggle == true && ObjIdToCharacterId(elem.Value) == "0000"))
+            // If values are different, SheathSwapToggle is enabled, and the target weapon is from the Captain. Or if values are different, weapon is Partenza, and target weapon is from the Captain.
+            if (elem.Key != elem.Value && (_captain.SheathSwapToggle || elem.Key == eObjId.WP_Captain_Partenza) && Enum.IsDefined(typeof(CaptainWeaponObjId), elem.Value))
             {
-                ProcessSheaths(captainIdList, "0101");
+                ProcessSheathSwap(captainIdList, eObjId.PL_Djeeta_Original); // Specifically Djeeta's original outfit because it's the only Captain model with multiple sheaths
                 break;
             }
         }
 
         foreach (var elem in narmayaIdList)
         {
-            if (elem.Key != elem.Value && _narmaya.SheathSwapToggle == true && ObjIdToCharacterId(elem.Key) == "1400")
+            // If values are different, SheathSwpToggle is enabled, and the target weapon is from Narmaya
+            if (elem.Key != elem.Value && _narmaya.SheathSwapToggle && Enum.IsDefined(typeof(NarmayaWeaponObjId), elem.Value))
             {
-                ProcessSheaths(narmayaIdList, "1400");
+                ProcessSheathSwap(narmayaIdList, eObjId.PL_Narmaya);
                 break;
             }
         }
     }
 
-    public void ProcessEffectSwap(uint sourceHex, uint targetHex)
+    public void ProcessEffectSwap(eObjId sourceObjId, eObjId targetObjId)
     {
-        if (targetHex == sourceHex) // If no change
+        if (targetObjId == sourceObjId) // If no change
             return;
 
         try
         {
-            var sourceResult = _objRead.Entries.FirstOrDefault(e => e.SearchObjidKey == sourceHex);
+            var sourceResult = _objRead.Entries.FirstOrDefault(e => e.SearchObjidKey == (uint)sourceObjId);
 
             if (sourceResult is null)
             {
-                _logger.WriteLine($"Can't find {ObjIdToModelId(sourceHex)} in info.objread to swap effects. Either doesn't have an effect or something broke.");
+                _logger.WriteLine($"Can't find {Utils.ObjIdToModelId(sourceObjId)} in info.objread to swap effects. Either doesn't have an effect or something broke.");
                 return;
             }
 
-            _logger.WriteLine($"Swapping {ObjIdToModelId(sourceHex)} effect with {ObjIdToModelId(targetHex)}");
+            _logger.WriteLine($"Swapping {Utils.ObjIdToModelId(sourceObjId)} effect with {Utils.ObjIdToModelId(targetObjId)}");
 
-            sourceResult.EffectsObjid = targetHex;
+            sourceResult.EffectsObjid = (uint)targetObjId;
 
-            if (Enum.IsDefined(typeof(FerryWeaponObjId), sourceHex)
-                && Enum.IsDefined(typeof(FerryWeaponObjId), targetHex)) // If both weapons are from Ferry
+            if (Enum.IsDefined(typeof(FerryWeaponObjId), sourceObjId)
+                && Enum.IsDefined(typeof(FerryWeaponObjId), targetObjId)) // If both weapons are from Ferry
             {
-                ProcessCallSelector(ObjIdToModelId(sourceHex), ObjIdToModelId(targetHex));
+                ProcessCallSelector(sourceObjId, targetObjId);
             }
 
         }
         catch (Exception ex)
         {
-            _logger.WriteLine($"[{_modConfig.ModId}] Failed to apply {ObjIdToModelId(sourceHex)} effect swap to {ObjIdToModelId(targetHex)} - {ex.Message}");
+            _logger.WriteLine($"[{_modConfig.ModId}] Failed to apply {Utils.ObjIdToModelId(sourceObjId)} effect swap to {Utils.ObjIdToModelId(targetObjId)} - {ex.Message}");
         }
     }
 
-    public void ProcessModels(uint sourceHex, uint targetHex)
+    public void ProcessModels(eObjId sourceUint, eObjId targetUint)
     {
-        if (targetHex == sourceHex)
+        if (targetUint == sourceUint)
             return;
 
         try
         {
-            var sourceResult = _objRead.Entries.FirstOrDefault(e => e.SearchObjidKey == sourceHex);
+            var sourceResult = _objRead.Entries.FirstOrDefault(e => e.SearchObjidKey == (uint)sourceUint);
 
             if (sourceResult is null)
             {
-                _logger.WriteLine($"Replacing {ObjIdToModelId(sourceHex)} with {ObjIdToModelId(targetHex)}. No entry found, making new entry.");
+                _logger.WriteLine($"Replacing {Utils.ObjIdToModelId(sourceUint)} with {Utils.ObjIdToModelId(targetUint)}. No entry found, making new entry.");
 
-                sourceResult = NewInfo(sourceHex);
+                sourceResult = NewInfo(sourceUint);
 
 #if DEBUG_DEFAULT || DEBUG_NORESTRICTIONS
                 _logger.WriteLine($"{sourceResult.SearchObjidKey}");
@@ -532,46 +262,48 @@ public class Mod : ModBase // <= Do not Remove.
             }
             else
             {
-                _logger.WriteLine($"Replacing {ObjIdToModelId(sourceHex)} with {ObjIdToModelId(targetHex)}");
+                _logger.WriteLine($"Replacing {Utils.ObjIdToModelId(sourceUint)} with {Utils.ObjIdToModelId(targetUint)}");
             }
 
-            if (HasEffect(sourceHex) && !HasEffect(targetHex) && _configuration.ToggleEffectPreservation == true) // Effect preservation
+            if (Utils.HasEffect((eObjId)sourceUint) && !Utils.HasEffect((eObjId)targetUint) && _configuration.ToggleEffectPreservation == true) // Effect preservation
             {
-                var targetResult = _objRead.Entries.FirstOrDefault(e => e.SearchObjidKey == targetHex);
+                var targetResult = _objRead.Entries.FirstOrDefault(e => e.SearchObjidKey == (uint)targetUint);
 
                 var sourceEffect = sourceResult.EffectsObjid;
 
-                _logger.WriteLine($"Preserving {ObjIdToModelId(sourceHex)} effect, writing to {ObjIdToModelId(targetHex)}.");
+                _logger.WriteLine($"Preserving {Utils.ObjIdToModelId(sourceUint)} effect, writing to {Utils.ObjIdToModelId(targetUint)}.");
 
                 if (targetResult is null)
                 {
-                    targetResult = NewInfo(targetHex);
-                    _logger.WriteLine($"No {ObjIdToModelId(targetHex)} entry found, making new entry.");
+                    targetResult = NewInfo(targetUint);
+                    _logger.WriteLine($"No {Utils.ObjIdToModelId(targetUint)} entry found, making new entry.");
                 }
                 
                 targetResult.EffectsObjid = sourceEffect; // Does it this way instead of sourceHex to preserve Effect Swap changes
             }
 
-            if ((Enum.IsDefined(typeof(FerryWeaponObjId), sourceHex) && Enum.IsDefined(typeof(FerryWeaponObjId), targetHex))
-                || (Enum.IsDefined(typeof(SeofonWeaponObjId), sourceHex) && Enum.IsDefined(typeof(SeofonWeaponObjId), targetHex))) // If both weapons are from Ferry, or both are from Seofon
+            if ((Enum.IsDefined(typeof(FerryWeaponObjId), sourceUint) && Enum.IsDefined(typeof(FerryWeaponObjId), targetUint))
+                || (Enum.IsDefined(typeof(SeofonWeaponObjId), sourceUint) && Enum.IsDefined(typeof(SeofonWeaponObjId), targetUint))) // If both weapons are from Ferry, or both are from Seofon
             {
-                ProcessCallSelector(ObjIdToModelId(sourceHex), ObjIdToModelId(targetHex));
+                ProcessCallSelector(sourceUint, targetUint);
             }
 
-            sourceResult.ModelObjid = targetHex;
-            sourceResult.PhysicsObjid = targetHex;
-            sourceResult.UnkObjid8 = targetHex;
+            sourceResult.ModelObjid = (uint)targetUint;
+            sourceResult.PhysicsObjid = (uint)targetUint;
+            sourceResult.UnkObjid8 = (uint)targetUint;
         }
         catch (Exception ex)
         {
-            _logger.WriteLine($"[{_modConfig.ModId}] Failed to apply {ObjIdToModelId(sourceHex)} model patch - {ex.Message}");
+            _logger.WriteLine($"[{_modConfig.ModId}] Failed to apply {Utils.ObjIdToModelId(sourceUint)} model patch - {ex.Message}");
         }
     }
 
-    public void ProcessEffectControl(string sourceName, WeaponEffectControlType controlType)
+    public void ProcessEffectControl(eObjId sourceUint, WeaponEffectControlType controlType)
     {
         if (!_dataManagerRef.TryGetTarget(out IDataManager manager))
             return;
+
+        string sourceName = Utils.ObjIdToModelId(sourceUint);
 
         if (controlType == WeaponEffectControlType.Enabled)
             return;
@@ -634,35 +366,37 @@ public class Mod : ModBase // <= Do not Remove.
         }
     }
 
-    public void ProcessSheaths(Dictionary<uint, uint> idList, string characterId)
+    public void ProcessSheathSwap(Dictionary<eObjId, eObjId> objIdMap, eObjId characterObjId)
     {
         if (!_dataManagerRef.TryGetTarget(out IDataManager manager))
             return;
 
         int skipCount = 0;
-        foreach (var elem in idList)
+        foreach (var elem in objIdMap)
         {
-            if ((characterId == "1400" && ObjIdToCharacterId(elem.Value) != "1400") || (characterId == "0101" && ObjIdToCharacterId(elem.Value) != "0000") || elem.Key == elem.Value)
+            if ((characterObjId == eObjId.PL_Narmaya && !Enum.IsDefined(typeof(NarmayaWeaponObjId), elem.Value)) || 
+                (characterObjId == eObjId.PL_Djeeta_Original && !Enum.IsDefined(typeof(CaptainWeaponObjId), elem.Value)) || 
+                elem.Key == elem.Value)
             {
                 skipCount++;
             }
         }
-        if (skipCount == idList.Count) // Skips the whole method if all the values are matching and/or other characters' weapons
+        if (skipCount == objIdMap.Count) // Skips the whole method if all the values are unchanged and/or other characters' weapons
         {
             return;
         }
 
-        _logger.WriteLine($"Swapping sheaths for {(characterId == "0101" ? "Djeeta" : "Narmaya")}");
+        _logger.WriteLine($"Swapping sheaths for {(characterObjId == eObjId.PL_Djeeta_Original ? "Djeeta" : "Narmaya")}");
 
         string characterMInfo;
 
-        if (characterId == "1400" || characterId == "0101")
+        if (characterObjId == eObjId.PL_Narmaya || characterObjId == eObjId.PL_Djeeta_Original)
         {
-            characterMInfo = $"model/pl/pl{characterId}/pl{characterId}.minfo";
+            characterMInfo = $"model/pl/pl{characterObjId}/pl{characterObjId}.minfo";
         }
         else
         {
-            _logger.WriteLine($"Character {characterId} does not have a swappable sheath, this method should not have been called.");
+            _logger.WriteLine($"Character {characterObjId} does not have a swappable sheath, this method should not have been called.");
             return;
         }
 
@@ -676,19 +410,21 @@ public class Mod : ModBase // <= Do not Remove.
         _modelInfo = ModelInfo.Serializer.Parse(fileBytes);
         var modelInfoBackup = ModelInfo.Serializer.Parse(fileBytes);
 
-        foreach (var elem in idList)
+        foreach (var elem in objIdMap)
         {
-            if ((characterId == "1400" && ObjIdToCharacterId(elem.Value) != "1400") || (characterId == "0101" && ObjIdToCharacterId(elem.Value) != "0000") || elem.Key == elem.Value) // Skip if config is set to another character's weapon or the same
+            if ((characterObjId == eObjId.PL_Narmaya && !Enum.IsDefined(typeof(NarmayaWeaponObjId), elem.Value)) ||
+                (characterObjId == eObjId.PL_Djeeta_Rebel && !Enum.IsDefined(typeof(CaptainWeaponObjId), elem.Value)) ||
+                elem.Key == elem.Value) // Skip if config is set to another character's weapon or the same
             {
                 continue;
             }
 
-            string sourceSheath = ObjIdToSheathId(elem.Key);
-            string targetSheath = ObjIdToSheathId(elem.Value);
+            string sourceSheath = Utils.ObjIdToSheathId(elem.Key);
+            string targetSheath = Utils.ObjIdToSheathId(elem.Value);
 
             _logger.WriteLine($"Changing {sourceSheath} to {targetSheath}");
 
-            if (characterId == "1400")
+            if (characterObjId == eObjId.PL_Narmaya)
             {
                 Dictionary<string, int> subMeshNumber = new()
                 {
@@ -700,8 +436,8 @@ public class Mod : ModBase // <= Do not Remove.
                     { "a00_sheath", 5 },
                 };
 
-                List<int> sourceLodIndices = new();
-                List<int> targetLodIndices = new();
+                List<int> sourceLodIndices = [];
+                List<int> targetLodIndices = [];
 
                 for (int i = 0; i < modelInfoBackup.Lods.Count; i++)
                 {
@@ -763,18 +499,18 @@ public class Mod : ModBase // <= Do not Remove.
                 }
             }
 
-            var sourceData = _modelInfo.SubMeshes[sourceIndex];
-            var targetData = modelInfoBackup.SubMeshes[targetIndex];
+            SubMeshInfo sourceData = _modelInfo.SubMeshes[sourceIndex];
+            SubMeshInfo targetData = modelInfoBackup.SubMeshes[targetIndex];
 
             string sourceDataName;
             BoundaryBox sourceDataBbox;
 
-            if ((characterId == "0101" && _captain.SheathSwapToggle == true) || elem.Key == (uint)CaptainWeaponObjId.Partenza)
+            if (characterObjId == eObjId.PL_Djeeta_Rebel && (_captain.SheathSwapToggle || elem.Key == (eObjId)CaptainWeaponObjId.Partenza))
             {
                 sourceData.Name = targetData.Name;
                 sourceData.Bbox = targetData.Bbox;
             }
-            else if (characterId == "1400")
+            else if (characterObjId == eObjId.PL_Narmaya)
             {
                 sourceDataName = sourceData.Name;
                 sourceDataBbox = sourceData.Bbox;
@@ -793,7 +529,7 @@ public class Mod : ModBase // <= Do not Remove.
             outputBuffer.AsSpan(0, length).ToArray());
     }
 
-    public void ProcessCallSelector(string sourceName, string targetName) // callselector.bxm also includes data for Sandalphon and Seofon, unsure what that data is for
+    public void ProcessCallSelector(eObjId sourceUint, eObjId targetUint) // callselector.bxm also includes data for Sandalphon and Seofon, unsure what that data is for
     {
         if (!_dataManagerRef.TryGetTarget(out IDataManager manager))
         {
@@ -809,6 +545,9 @@ public class Mod : ModBase // <= Do not Remove.
             return;
         }
 
+        string sourceName = Utils.ObjIdToModelId(sourceUint);
+        string targetName = Utils.ObjIdToModelId(targetUint);
+
         try
         {
             byte[] file = (manager.FileExists(effectFile, includeExternal: false)) ? manager.GetArchiveFile(effectFile) : _workingFiles[effectFile]; // If file exists in archive use it, else use backup
@@ -818,12 +557,9 @@ public class Mod : ModBase // <= Do not Remove.
 
             var root = xmlDoc["root"];
             string baseString;
-            char targetSuffix;
 
-            if (WeaponEffects.FerryCallSelectorSuffixes().ContainsKey(targetName))
+            if (WeaponEffects.FerryCallSelectorSuffixes.TryGetValue((eObjId)targetUint, out char targetSuffix))
             {
-                targetSuffix = WeaponEffects.FerryCallSelectorSuffixes()[targetName];
-
                 foreach (XmlNode node in root.ChildNodes)
                 {
                     if (node.Attributes["ObjId"].Value.Equals(sourceName, StringComparison.OrdinalIgnoreCase))
@@ -844,7 +580,7 @@ public class Mod : ModBase // <= Do not Remove.
                     }
                 }
             }
-            else if (WeaponEffects.SeofonCallSelector().ContainsKey(targetName))
+            else if (WeaponEffects.SeofonCallSelector.TryGetValue((eObjId)targetUint, out Dictionary<char, char>? callSelectors))
             {
                 foreach (XmlNode node in root.ChildNodes)
                 {
@@ -852,15 +588,15 @@ public class Mod : ModBase // <= Do not Remove.
                     {
                         if (node.Attributes["EstId"].Value[0] == '1') // This separation is necessary because Seofon's CallSelector effects have 2 patterns they follow, one starts with 1 and the other with 7
                         {
-                            baseString = node.Attributes["EstId"].Value[..2]; // Source string without the last character
-                            targetSuffix = WeaponEffects.SeofonCallSelector()[targetName]['1'];
+                            baseString = node.Attributes["EstId"].Value[..2]; // Source string without the last two characters
+                            targetSuffix = callSelectors['1']; // Not actually a suffix, second to last character
 
                             node.Attributes["EstId"].Value = $"{baseString}{targetSuffix}{node.Attributes["EstId"].Value[^1]}";
                         }
                         else if (node.Attributes["EstId"].Value[0] == '7')
                         {
-                            baseString = node.Attributes["EstId"].Value[..^1];
-                            targetSuffix = WeaponEffects.SeofonCallSelector()[targetName]['7'];
+                            baseString = node.Attributes["EstId"].Value[..^1]; // Source string without the last character
+                            targetSuffix = callSelectors['7'];
 
                             node.Attributes["EstId"].Value = $"{baseString}{targetSuffix}";
                         }
@@ -894,52 +630,19 @@ public class Mod : ModBase // <= Do not Remove.
         }
     }
 
-    //public void ProcessFiles(List<string> sourcePaths, List<string> targetPaths)
-    //{
-    //    if (!_dataManagerRef.TryGetTarget(out IDataManager manager))
-    //        return;
-
-    //    for (int i = 0; i < targetPaths.Count; i++)
-    //    {
-    //        if (manager.FileExists(targetPaths[i], includeExternal: false))
-    //        {
-    //            byte[] targetFile = manager.GetArchiveFile(targetPaths[i]);
-    //            byte[] sourceBytes;
-
-    //            // Store the source if it exists
-    //            if (manager.FileExists(sourcePaths[i], includeExternal: false))
-    //            {
-    //                sourceBytes = manager.GetArchiveFile(sourcePaths[i]);
-    //                _originalFiles.Add(sourcePaths[i], sourceBytes);
-    //            }
-
-    //            manager.AddOrUpdateExternalFile(sourcePaths[i], targetFile);
-    //        }
-    //        else if (_originalFiles.TryGetValue(targetPaths[i], out byte[] byteData))
-    //        {
-    //            manager.AddOrUpdateExternalFile(sourcePaths[i], byteData);
-    //        }
-    //        else
-    //        {
-    //            _logger.WriteLine($"{targetPaths[i]} not found");
-    //            return;
-    //        }
-    //    }
-    //}
-
-    public Info NewInfo(uint objId)
+    public Info NewInfo(eObjId objId)
     {
-        uint hexAlt = objId & 0xFFFFFF00;
+        uint hexAlt = (uint)objId & 0xFFFFFF00;
 
         Info newInfo = new()
         {
-            SearchObjidKey = objId,
+            SearchObjidKey = (uint)objId,
             UnkObjid2 = hexAlt,
-            ModelObjid = objId,
-            EffectsObjid = objId,
+            ModelObjid = (uint)objId,
+            EffectsObjid = (uint)objId,
             UnkObjid6 = hexAlt,
-            PhysicsObjid = objId,
-            UnkObjid8 = objId       // Unsure what this one does
+            PhysicsObjid = (uint)objId,
+            UnkObjid8 = (uint)objId       // Unsure what this one does
         };
 
         _objRead.Entries.Add(newInfo);
@@ -947,134 +650,308 @@ public class Mod : ModBase // <= Do not Remove.
         return newInfo;
     }
 
-    static bool HasEffect(uint objId)
+    /// <summary>
+    /// Contains the config settings for swapping models.
+    /// </summary>
+    /// <returns>Dictionary&lt;Source ObjId, Config ObjId&gt;</returns>
+    public Dictionary<eObjId, eObjId> GetModelSwapMap()
     {
-        return WeaponEffects.AllGlowWeapons().Contains(ObjIdToModelId(objId));
-    }
-
-    static string ObjIdToModelId(uint objId)
-    {
-        uint category = objId >> 16;
-        uint modelId = objId & 0xFFFF;
-
-        return category switch
+        return new()
         {
-            0x01 => $"pl{modelId:X4}",
-            0x02 => $"em{modelId:X4}",
-            0x03 => $"wp{modelId:X4}",
-            0x04 => $"et{modelId:X4}",
-            0x05 => $"ef{modelId:X4}",
-            0x07 => $"it{modelId:X4}",
-            0x09 => $"sc{modelId:X4}",
-            0x0C => $"bg{modelId:X4}",
-            0x0E => $"bh{modelId:X4}",
-            0x0F => $"ba{modelId:X4}",
-            0x100 => $"fp{modelId:X4}",
-            0x101 => $"fe{modelId:X4}",
-            0x102 => $"fn{modelId:X4}",
-            0x103 => $"we{modelId:X4}",
-            0x104 => $"wn{modelId:X4}",
-            0x10A => $"np{modelId:X4}",
-            0x10B => $"tr{modelId:X4}",
-            0x10C => $"bt{modelId:X4}",
-            _ => throw new ArgumentException($"Invalid object id category {category}", nameof(objId))
+            { (eObjId)AllWeaponObjId.Captain_Travellers_Sword, (eObjId)_captain.Swap_TravellersSword                        },
+            { (eObjId)AllWeaponObjId.Captain_Durandal, (eObjId)_captain.Swap_Durandal                                       },
+            { (eObjId)AllWeaponObjId.Captain_Sword_of_Eos, (eObjId)_captain.Swap_SwordofEos                                 },
+            { (eObjId)AllWeaponObjId.Captain_Albacore_Blade, (eObjId)_captain.Swap_AlbacoreBlade                            },
+            { (eObjId)AllWeaponObjId.Captain_Ultima_Sword, (eObjId)_captain.Swap_UltimaSword                                },
+            { (eObjId)AllWeaponObjId.Captain_Seven_Star_Sword, (eObjId)_captain.Swap_SevenStarSword                         },
+            { (eObjId)AllWeaponObjId.Captain_Partenza, (eObjId)_captain.Swap_Partenza                                       },
+
+            { (eObjId)AllWeaponObjId.Katalina_Rukalsa, (eObjId)_katalina.Swap_Rukalsa                                       },
+            { (eObjId)AllWeaponObjId.Katalina_Flame_Rapier, (eObjId)_katalina.Swap_FlameRapier                              },
+            { (eObjId)AllWeaponObjId.Katalina_Murgleis, (eObjId)_katalina.Swap_Murgleis                                     },
+            { (eObjId)AllWeaponObjId.Katalina_Luminiera_Sword_Omega, (eObjId)_katalina.Swap_LuminieraSwordOmega             },
+            { (eObjId)AllWeaponObjId.Katalina_Ephemeron, (eObjId)_katalina.Swap_Ephemeron                                   },
+            { (eObjId)AllWeaponObjId.Katalina_Blutgang, (eObjId)_katalina.Swap_Blutgang                                     },
+
+            { (eObjId)AllWeaponObjId.Rackam_Flintspike, (eObjId)_rackam.Swap_Flintspike                                     },
+            { (eObjId)AllWeaponObjId.Rackam_Wheellock_Axe, (eObjId)_rackam.Swap_WheellockAxe                                },
+            { (eObjId)AllWeaponObjId.Rackam_Benedia, (eObjId)_rackam.Swap_Benedia                                           },
+            { (eObjId)AllWeaponObjId.Rackam_Tiamat_Bolt_Omega, (eObjId)_rackam.Swap_TiamatBoltOmega                         },
+            { (eObjId)AllWeaponObjId.Rackam_Stormcloud, (eObjId)_rackam.Swap_Stormcloud                                     },
+            { (eObjId)AllWeaponObjId.Rackam_Freikugel, (eObjId)_rackam.Swap_Freikugel                                       },
+
+            { (eObjId)AllWeaponObjId.Io_Little_Witch_Scepter, (eObjId)_io.Swap_LittleWitchScepter                           },
+            { (eObjId)AllWeaponObjId.Io_Zhezl, (eObjId)_io.Swap_Zhezl                                                       },
+            { (eObjId)AllWeaponObjId.Io_Gambanteinn, (eObjId)_io.Swap_Gambanteinn                                           },
+            { (eObjId)AllWeaponObjId.Io_Colossus_Cane_Omega, (eObjId)_io.Swap_ColossusCaneOmega                             },
+            { (eObjId)AllWeaponObjId.Io_Tupsimati, (eObjId)_io.Swap_Tupsimati                                               },
+            { (eObjId)AllWeaponObjId.Io_Caduceus, (eObjId)_io.Swap_Caduceus                                                 },
+
+            { (eObjId)AllWeaponObjId.Eugen_Dreyse, (eObjId)_eugen.Swap_Dreyse                                               },
+            { (eObjId)AllWeaponObjId.Eugen_Matchlock, (eObjId)_eugen.Swap_Matchlock                                         },
+            { (eObjId)AllWeaponObjId.Eugen_AK4A, (eObjId)_eugen.Swap_AK4A                                                   },
+            { (eObjId)AllWeaponObjId.Eugen_Leviathan_Muzzle, (eObjId)_eugen.Swap_LeviathanMuzzle                            },
+            { (eObjId)AllWeaponObjId.Eugen_Clarion, (eObjId)_eugen.Swap_Clarion                                             },
+            { (eObjId)AllWeaponObjId.Eugen_Draconic_Fire, (eObjId)_eugen.Swap_DraconicFire                                  },
+
+            { (eObjId)AllWeaponObjId.Rosetta_Egoism, (eObjId)_rosetta.Swap_Egoism                                           },
+            { (eObjId)AllWeaponObjId.Rosetta_Swordbreaker, (eObjId)_rosetta.Swap_Swordbreaker                               },
+            { (eObjId)AllWeaponObjId.Rosetta_Love_Eternal, (eObjId)_rosetta.Swap_LoveEternal                                },
+            { (eObjId)AllWeaponObjId.Rosetta_Rose_Crystal_Knife, (eObjId)_rosetta.Swap_RoseCrystalKnife                     },
+            { (eObjId)AllWeaponObjId.Rosetta_Cortana, (eObjId)_rosetta.Swap_Cortana                                         },
+            { (eObjId)AllWeaponObjId.Rosetta_Dagger_of_Bahamut_Coda, (eObjId)_rosetta.Swap_DaggerofBahamutCoda              },
+
+            { (eObjId)AllWeaponObjId.Ferry_Geisterpeitche, (eObjId)_ferry.Swap_Geisterpeitche                               },
+            { (eObjId)AllWeaponObjId.Ferry_Leather_Belt, (eObjId)_ferry.Swap_LeatherBelt                                    },
+            { (eObjId)AllWeaponObjId.Ferry_Ethereal_Lasher, (eObjId)_ferry.Swap_EtherealLasher                              },
+            { (eObjId)AllWeaponObjId.Ferry_Flame_Lit_Curl, (eObjId)_ferry.Swap_FlameLitCurl                                 },
+            { (eObjId)AllWeaponObjId.Ferry_Live_Wire, (eObjId)_ferry.Swap_LiveWire                                          },
+            { (eObjId)AllWeaponObjId.Ferry_Erinnerung, (eObjId)_ferry.Swap_Erinnerung                                       },
+
+            { (eObjId)AllWeaponObjId.Lancelot_Altachiara, (eObjId)_lancelot.Swap_Altachiara                                 },
+            { (eObjId)AllWeaponObjId.Lancelot_Hoarfrost_Blade_Persius, (eObjId)_lancelot.Swap_HoarfrostBladePersius         },
+            { (eObjId)AllWeaponObjId.Lancelot_Blanc_Comme_Neige, (eObjId)_lancelot.Swap_BlancCommeNeige                     },
+            { (eObjId)AllWeaponObjId.Lancelot_Vegalta, (eObjId)_lancelot.Swap_Vegalta                                       },
+            { (eObjId)AllWeaponObjId.Lancelot_Knight_of_Ice, (eObjId)_lancelot.Swap_KnightOfIce                             },
+            { (eObjId)AllWeaponObjId.Lancelot_Damascus_Knife, (eObjId)_lancelot.Swap_DamascusKnife                          },
+
+            { (eObjId)AllWeaponObjId.Vane_Alabarda, (eObjId)_vane.Swap_Alabarda                                             },
+            { (eObjId)AllWeaponObjId.Vane_Swan, (eObjId)_vane.Swap_Swan                                                     },
+            { (eObjId)AllWeaponObjId.Vane_Treuer_Krieger, (eObjId)_vane.Swap_TreuerKrieger                                  },
+            { (eObjId)AllWeaponObjId.Vane_Ukonvasara, (eObjId)_vane.Swap_Ukonvasara                                         },
+            { (eObjId)AllWeaponObjId.Vane_Blossom_Axe, (eObjId)_vane.Swap_BlossomAxe                                        },
+            { (eObjId)AllWeaponObjId.Vane_Mjolnir, (eObjId)_vane.Swap_Mjolnir                                               },
+
+            { (eObjId)AllWeaponObjId.Percival_Flamberge, (eObjId)_percival.Swap_Flamberge                                   },
+            { (eObjId)AllWeaponObjId.Percival_Lohengrin, (eObjId)_percival.Swap_Lohengrin                                   },
+            { (eObjId)AllWeaponObjId.Percival_Antwerp, (eObjId)_percival.Swap_Antwerp                                       },
+            { (eObjId)AllWeaponObjId.Percival_Joyeuse, (eObjId)_percival.Swap_Joyeuse                                       },
+            { (eObjId)AllWeaponObjId.Percival_Lord_of_Flames, (eObjId)_percival.Swap_LordOfFlames                           },
+            { (eObjId)AllWeaponObjId.Percival_Gottfried, (eObjId)_percival.Swap_Gottfried                                   },
+
+            { (eObjId)AllWeaponObjId.Siegfried_Integrity, (eObjId)_siegfried.Swap_Integrity                                 },
+            { (eObjId)AllWeaponObjId.Siegfried_Broadsword_of_Earth, (eObjId)_siegfried.Swap_BroadswordofEarth               },
+            { (eObjId)AllWeaponObjId.Siegfried_Ascalon, (eObjId)_siegfried.Swap_Ascalon                                     },
+            { (eObjId)AllWeaponObjId.Siegfried_Hrunting, (eObjId)_siegfried.Swap_Hrunting                                   },
+            { (eObjId)AllWeaponObjId.Siegfried_Windhose, (eObjId)_siegfried.Swap_Windhose                                   },
+            { (eObjId)AllWeaponObjId.Siegfried_Balmung, (eObjId)_siegfried.Swap_Balmung                                     },
+
+            { (eObjId)AllWeaponObjId.Charlotta_Claiomh_Solais, (eObjId)_charlotta.Swap_ClaiomhSolais                        },
+            { (eObjId)AllWeaponObjId.Charlotta_Arondight, (eObjId)_charlotta.Swap_Arondight                                 },
+            { (eObjId)AllWeaponObjId.Charlotta_Claidheamh_Soluis, (eObjId)_charlotta.Swap_ClaidheamhSoluis                  },
+            { (eObjId)AllWeaponObjId.Charlotta_Ushumgal, (eObjId)_charlotta.Swap_Ushumgal                                   },
+            { (eObjId)AllWeaponObjId.Charlotta_Sahrivar, (eObjId)_charlotta.Swap_Sahrivar                                   },
+            { (eObjId)AllWeaponObjId.Charlotta_Galatine, (eObjId)_charlotta.Swap_Galatine                                   },
+
+            { (eObjId)AllWeaponObjId.Yodarha_Kiku_Ichimonji, (eObjId)_yodarha.Swap_KikuIchimonji                            },
+            { (eObjId)AllWeaponObjId.Yodarha_Asura, (eObjId)_yodarha.Swap_Asura                                             },
+            { (eObjId)AllWeaponObjId.Yodarha_Fudo_Kuniyuki, (eObjId)_yodarha.Swap_FudoKuniyuki                              },
+            { (eObjId)AllWeaponObjId.Yodarha_Higurashi, (eObjId)_yodarha.Swap_Higurashi                                     },
+            { (eObjId)AllWeaponObjId.Yodarha_Xeno_Phantom_Demon_Blade, (eObjId)_yodarha.Swap_XenoPhantomDemonBlade          },
+            { (eObjId)AllWeaponObjId.Yodarha_Swordfish, (eObjId)_yodarha.Swap_Swordfish                                     },
+
+            { (eObjId)AllWeaponObjId.Narmaya_Nakamaki_Nodachi, (eObjId)_narmaya.Swap_NakamakiNodachi                        },
+            { (eObjId)AllWeaponObjId.Narmaya_Kotetsu, (eObjId)_narmaya.Swap_Kotetsu                                         },
+            { (eObjId)AllWeaponObjId.Narmaya_Venustas, (eObjId)_narmaya.Swap_Venustas                                       },
+            { (eObjId)AllWeaponObjId.Narmaya_Flourithium_Blade, (eObjId)_narmaya.Swap_Flourithium_Blade                     },
+            { (eObjId)AllWeaponObjId.Narmaya_Blade_of_Purification, (eObjId)_narmaya.Swap_BladeofPurification               },
+            { (eObjId)AllWeaponObjId.Narmaya_Ameno_Habakiri, (eObjId)_narmaya.Swap_AmenoHabakiri                            },
+
+            { (eObjId)AllWeaponObjId.Ghandagoza_Brahma_Gauntlet, (eObjId)_ghandagoza.Swap_BrahmaGauntlet                    },
+            { (eObjId)AllWeaponObjId.Ghandagoza_Rope_Knuckles, (eObjId)_ghandagoza.Swap_RopeKnuckles                        },
+            { (eObjId)AllWeaponObjId.Ghandagoza_Crimson_Finger, (eObjId)_ghandagoza.Swap_CrimsonFinger                      },
+            { (eObjId)AllWeaponObjId.Ghandagoza_Golden_Fists_of_Ura, (eObjId)_ghandagoza.Swap_GoldenFistsOfUra              },
+            { (eObjId)AllWeaponObjId.Ghandagoza_Arkab, (eObjId)_ghandagoza.Swap_Arkab                                       },
+            { (eObjId)AllWeaponObjId.Ghandagoza_Sky_Piercer, (eObjId)_ghandagoza.Swap_SkyPiercer                            },
+
+            { (eObjId)AllWeaponObjId.Zeta_Spear_of_Arvess, (eObjId)_zeta.Swap_SpearofArvess                                 },
+            { (eObjId)AllWeaponObjId.Zeta_Sunspot_Spear, (eObjId)_zeta.Swap_Sunspot_Spear                                   },
+            { (eObjId)AllWeaponObjId.Zeta_Brionac, (eObjId)_zeta.Swap_Brionac                                               },
+            { (eObjId)AllWeaponObjId.Zeta_Gisla, (eObjId)_zeta.Swap_Gisla                                                   },
+            { (eObjId)AllWeaponObjId.Zeta_Huanglong_Spear, (eObjId)_zeta.Swap_HuanglongSpear                                },
+            { (eObjId)AllWeaponObjId.Zeta_Gae_Bulg, (eObjId)_zeta.Swap_GaeBulg                                              },
+
+            { (eObjId)AllWeaponObjId.Vaseraga_Great_Scythe_Grynoth, (eObjId)_vaseraga.Swap_GreatScytheGrynoth               },
+            { (eObjId)AllWeaponObjId.Vaseraga_Alsarav, (eObjId)_vaseraga.Swap_Alsarav                                       },
+            { (eObjId)AllWeaponObjId.Vaseraga_Wurtzite_Scythe, (eObjId)_vaseraga.Swap_WurtziteScythe                        },
+            { (eObjId)AllWeaponObjId.Vaseraga_Soul_Eater, (eObjId)_vaseraga.Swap_SoulEater                                  },
+            { (eObjId)AllWeaponObjId.Vaseraga_Cosmic_Scythe, (eObjId)_vaseraga.Swap_CosmicScythe                            },
+            { (eObjId)AllWeaponObjId.Vaseraga_Ereshkigal, (eObjId)_vaseraga.Swap_Ereshkigal                                 },
+
+            { (eObjId)AllWeaponObjId.Cagliostro_Magnum_Opus, (eObjId)_cagliostro.Swap_MagnumOpus                            },
+            { (eObjId)AllWeaponObjId.Cagliostro_Dream_Atlas, (eObjId)_cagliostro.Swap_DreamAtlas                            },
+            { (eObjId)AllWeaponObjId.Cagliostro_Transmigration_Tome, (eObjId)_cagliostro.Swap_TransmigrationTome            },
+            { (eObjId)AllWeaponObjId.Cagliostro_Sacred_Codex, (eObjId)_cagliostro.Swap_SacredCodex                          },
+            { (eObjId)AllWeaponObjId.Cagliostro_Arshivelle, (eObjId)_cagliostro.Swap_Arshivelle                             },
+            { (eObjId)AllWeaponObjId.Cagliostro_Zosimos, (eObjId)_cagliostro.Swap_Zosimos                                   },
+
+            { (eObjId)AllWeaponObjId.Id_Ragnarok, (eObjId)_id.Swap_Ragnarok                                                 },
+            { (eObjId)AllWeaponObjId.Id_Aviaeth_Faussart, (eObjId)_id.Swap_AviaethFaussart                                  },
+            { (eObjId)AllWeaponObjId.Id_Susanoo, (eObjId)_id.Swap_Susanoo                                                   },
+            { (eObjId)AllWeaponObjId.Id_Premium_Sword, (eObjId)_id.Swap_PremiumSword                                        },
+            { (eObjId)AllWeaponObjId.Id_Ecke_Sachs, (eObjId)_id.Swap_EckeSachs                                              },
+            { (eObjId)AllWeaponObjId.Id_Sword_of_Bahamut, (eObjId)_id.Swap_SwordofBahamut                                   },
+
+            { (eObjId)AllWeaponObjId.Sandalphon_Apprentice, (eObjId)_sandalphon.Swap_Apprentice                             },
+            { (eObjId)AllWeaponObjId.Sandalphon_World_Ender, (eObjId)_sandalphon.Swap_WorldEnder                             },
+
+            { (eObjId)AllWeaponObjId.Seofon_Sette_di_Spade, (eObjId)_seofon.Swap_SettediSpade                               },
+            { (eObjId)AllWeaponObjId.Seofon_Gateway_Star_Sword, (eObjId)_seofon.Swap_GatewayStarSword                       },
+
+            { (eObjId)AllWeaponObjId.Tweyen_Bow_of_Dismissal, (eObjId)_tweyen.Swap_BowofDismissal                           },
+            { (eObjId)AllWeaponObjId.Tweyen_Desolation_Crown_Bow, (eObjId)_tweyen.Swap_DesolationCrownBow                   },
         };
     }
 
-    static string ObjIdToSheathId(uint objId) // Skips Katalina, Gran+Djeeta rebelwear, Gran default, Rosetta, and Yodarha because hiding sheaths is hardcoded into the executable
+    /// <summary>
+    /// Contains the config settings for swapping effects.
+    /// </summary>
+    /// <returns>Dictionary&lt;Source ObjId, Config ObjId&gt;</returns>
+    public Dictionary<eObjId, eObjId> GetEffectSwapMap()
     {
-        /// Weapons that Disable Sheaths
-        /// 
-        /// Character       | Weapons
-        /// ~~~~~~~~~~~~~~~~|~~~~~~~~~~~
-        /// Captain Default | Albacore Blade
-        /// Captain Rebel   | Albacore Blade
-        /// Katalina        | Flame Rapier, Murgleis, Luminiera Sword Omega, Ephermeron, Blutgang
-        /// Rosetta         | Love Eternal
-        /// Yodarha         | Asura, Fudo-Kuniyuki, Xeno Phantom Demon Blade, Swordfish
-        ///
-
-        /// Weapons that Share Sheaths
-        /// 
-        /// Character               | Weapons
-        /// ~~~~~~~~~~~~~~~~~~~~~~~~|~~~~~~~~~~~
-        /// Captain Default Thin    | Partenza 
-        /// Captain Default Thick   | Traveller's Sword, Durandal, Sword of Eos, Ultima Sword, Seven-Star Sword
-        /// Captain Rebel           | Traveller's Sword, Durandal, Sword of Eos, Ultima Sword, Seven-Star Sword, Partenza
-        /// Rosetta                 | Egoism, Swordbreaker, Rose Crystal Knife, Cortana, Dagger of Bahamut Coda
-        /// Yodarha                 | Kiku-Ichimonji, Higurashi
-        /// 
-
-        string characterId = ObjIdToCharacterId(objId);
-        char sheathPrefix;
-        string sheathId;
-
-        if (characterId == "0000") // Djeeta, only messing with the default outfit but not rebelwear or any of Gran since they have a single large sheath each
+        return new()
         {
-            sheathPrefix = 'b';
+            { (eObjId)CaptainEffectWeaponObjId.Ascension, (eObjId)_captain.EffectSwap_SwordOfEos                            },
+            { (eObjId)CaptainEffectWeaponObjId.Terminus, (eObjId)_captain.EffectSwap_SevenStarSword                         },
 
-            if (objId == (uint)CaptainWeaponObjId.Partenza)
-            {
-                sheathId = $"{sheathPrefix}00_sheath";
-            }
-            else
-            {
-                sheathId = $"{sheathPrefix}10_sheath";
-            }
-        }
-        else if (characterId == "1400") // Narmaya
-        {
-            sheathPrefix = 'a';
-            char modelId = $"{(objId & 0xFFFF):X4}"[^1]; // Grabs last number
+            { (eObjId)KatalinaEffectWeaponObjId.Ascension, (eObjId)_katalina.EffectSwap_Murgleis                            },
+            { (eObjId)KatalinaEffectWeaponObjId.Terminus, (eObjId)_katalina.EffectSwap_Blutgang                             },
 
-            sheathId = $"{sheathPrefix}{modelId}0_sheath";
-        }
-        else
-        {
-            throw new ArgumentException($"Character {characterId} does not have a swappable sheath, this method should not have been called");
-        }
+            { (eObjId)RackamEffectWeaponObjId.Ascension, (eObjId)_rackam.EffectSwap_Benedia                                 },
+            { (eObjId)RackamEffectWeaponObjId.Terminus, (eObjId)_rackam.EffectSwap_Freikugel                                },
 
-        return sheathId;
+            { (eObjId)IoEffectWeaponObjId.Ascension, (eObjId)_io.EffectSwap_Gambanteinn                                     },
+            { (eObjId)IoEffectWeaponObjId.Terminus, (eObjId)_io.EffectSwap_Caduceus                                         },
+
+            { (eObjId)EugenEffectWeaponObjId.Ascension, (eObjId)_eugen.EffectSwap_AK4A                                      },
+            { (eObjId)EugenEffectWeaponObjId.Terminus, (eObjId)_eugen.EffectSwap_DraconicFire                               },
+
+            { (eObjId)RosettaEffectWeaponObjId.Ascension, (eObjId)_rosetta.EffectSwap_LoveEternal                           },
+            { (eObjId)RosettaEffectWeaponObjId.Flame, (eObjId)_rosetta.EffectSwap_Cortana                                   },
+            { (eObjId)RosettaEffectWeaponObjId.Terminus, (eObjId)_rosetta.EffectSwap_DaggerOfBahamutCoda                    },
+
+            { (eObjId)FerryEffectWeaponObjId.Ghostly, (eObjId)_ferry.EffectSwap_Geisterpeitche                              },
+            { (eObjId)FerryEffectWeaponObjId.Ascension, (eObjId)_ferry.EffectSwap_EtherealLasher                            },
+            { (eObjId)FerryEffectWeaponObjId.Flame, (eObjId)_ferry.EffectSwap_FlameLitCurl                                  },
+            { (eObjId)FerryEffectWeaponObjId.Electric, (eObjId)_ferry.EffectSwap_LiveWire                                   },
+            { (eObjId)FerryEffectWeaponObjId.Terminus, (eObjId)_ferry.EffectSwap_Erinnerung                                 },
+
+            { (eObjId)LancelotEffectWeaponObjId.Ascension, (eObjId)_lancelot.EffectSwap_KnightOfIce                         },
+            { (eObjId)LancelotEffectWeaponObjId.Terminus, (eObjId)_lancelot.EffectSwap_DamascusKnife                        },
+
+            { (eObjId)VaneEffectWeaponObjId.Ascension, (eObjId)_vane.EffectSwap_TreuerKrieger                               },
+            { (eObjId)VaneEffectWeaponObjId.Terminus, (eObjId)_vane.EffectSwap_Mjolnir                                      },
+
+            { (eObjId)PercivalEffectWeaponObjId.Ascension, (eObjId)_percival.EffectSwap_LordOfFlames                        },
+            { (eObjId)PercivalEffectWeaponObjId.Terminus, (eObjId)_percival.EffectSwap_Gottfried                            },
+
+            { (eObjId)SiegfriedEffectWeaponObjId.Ascension, (eObjId)_siegfried.EffectSwap_Ascalon                           },
+            { (eObjId)SiegfriedEffectWeaponObjId.Terminus, (eObjId)_siegfried.EffectSwap_Balmung                            },
+
+            { (eObjId)CharlottaEffectWeaponObjId.Ascension, (eObjId)_charlotta.EffectSwap_Claidheamh                        },
+            { (eObjId)CharlottaEffectWeaponObjId.Terminus, (eObjId)_charlotta.EffectSwap_Galatine                           },
+
+            { (eObjId)YodarhaEffectWeaponObjId.Ascension, (eObjId)_yodarha.EffectSwap_FudoKuniyuki                          },
+            { (eObjId)YodarhaEffectWeaponObjId.Terminus, (eObjId)_yodarha.EffectSwap_Swordfish                              },
+
+            { (eObjId)NarmayaEffectWeaponObjId.Ascension, (eObjId)_narmaya.EffectSwap_Venustas                              },
+            { (eObjId)NarmayaEffectWeaponObjId.Terminus, (eObjId)_narmaya.EffectSwap_AmenoHabakiri                          },
+
+            { (eObjId)GhandagozaEffectWeaponObjId.Ascension, (eObjId)_ghandagoza.EffectSwap_GoldenFistsOfUra                },
+            { (eObjId)GhandagozaEffectWeaponObjId.Terminus, (eObjId)_ghandagoza.EffectSwap_SkyPiercer                       },
+
+            { (eObjId)ZetaEffectWeaponObjId.Ascension, (eObjId)_zeta.EffectSwap_Brionac                                     },
+            { (eObjId)ZetaEffectWeaponObjId.Terminus, (eObjId)_zeta.EffectSwap_GaeBulg                                      },
+
+            { (eObjId)VaseragaEffectWeaponObjId.Ascension, (eObjId)_vaseraga.EffectSwap_WurtziteScythe                      },
+            { (eObjId)VaseragaEffectWeaponObjId.Terminus, (eObjId)_vaseraga.EffectSwap_Ereshkigal                           },
+
+            { (eObjId)CagliostroEffectWeaponObjId.Ascension, (eObjId)_cagliostro.EffectSwap_TransmigrationTome              },
+            { (eObjId)CagliostroEffectWeaponObjId.Terminus, (eObjId)_cagliostro.EffectSwap_Zosimos                          },
+
+            { (eObjId)IdEffectWeaponObjId.Ascension, (eObjId)_id.EffectSwap_Susanoo                                         },
+            { (eObjId)IdEffectWeaponObjId.Terminus, (eObjId)_id.EffectSwap_PrimalSwordOfBahamut                             },
+
+            // Intentionally no Sandalphon, Seofon, or Tweyen since they only have 1 effect each
+        };
     }
 
-    static string ObjIdToCharacterId(uint objId)
+    /// <summary>
+    /// Contains the config settings for controlling effects, such as toggling on or off.
+    /// </summary>
+    /// <returns>Dictionary&lt;Source ObjId, Control Type&gt;</returns>
+    public Dictionary<eObjId, WeaponEffectControlType> GetEffectControlMap()
     {
-        string characterId;
-        if (objId == (uint)CaptainWeaponObjId.Partenza) // Converts Partenza to 0000 so it can be grouped with other Captain weapons
-            characterId = $"{(objId & 0x0000):X4}";
-        else
-            characterId = $"{(objId & 0xFF00):X4}";
+        return new()
+        {
+            { (eObjId)CaptainEffectWeaponObjId.Ascension, _captain.EffectControl_SwordOfEos                           },
+            { (eObjId)CaptainEffectWeaponObjId.Terminus, _captain.EffectControl_SevenStarSword                        },
 
-        return characterId;
+            { (eObjId)KatalinaEffectWeaponObjId.Ascension, _katalina.EffectControl_Murgleis                           },
+            { (eObjId)KatalinaEffectWeaponObjId.Terminus, _katalina.EffectControl_Blutgang                            },
+
+            { (eObjId)RackamEffectWeaponObjId.Ascension, _rackam.EffectControl_Benedia                                },
+            { (eObjId)RackamEffectWeaponObjId.Terminus, _rackam.EffectControl_Freikugel                               },
+
+            { (eObjId)IoEffectWeaponObjId.Ascension, _io.EffectControl_Gambanteinn                                    },
+            { (eObjId)IoEffectWeaponObjId.Terminus, _io.EffectControl_Caduceus                                        },
+
+            { (eObjId)EugenEffectWeaponObjId.Ascension, _eugen.EffectControl_AK4A                                     },
+            { (eObjId)EugenEffectWeaponObjId.Terminus, _eugen.EffectControl_DraconicFire                              },
+
+            { (eObjId)RosettaEffectWeaponObjId.Ascension, _rosetta.EffectControl_LoveEternal                          },
+            { (eObjId)RosettaEffectWeaponObjId.Flame, (WeaponEffectControlType)_rosetta.EffectControl_Cortana         },
+            { (eObjId)RosettaEffectWeaponObjId.Terminus, _rosetta.EffectControl_DaggerOfBahamutCoda                   },
+
+            { (eObjId)FerryEffectWeaponObjId.Ghostly, (WeaponEffectControlType)_ferry.EffectControl_Geisterpeitche    },
+            { (eObjId)FerryEffectWeaponObjId.Ascension, _ferry.EffectControl_EtherealLasher                           },
+            { (eObjId)FerryEffectWeaponObjId.Flame, (WeaponEffectControlType)_ferry.EffectControl_FlameLitCurl        },
+            { (eObjId)FerryEffectWeaponObjId.Electric, (WeaponEffectControlType)_ferry.EffectControl_LiveWire         },
+            { (eObjId)FerryEffectWeaponObjId.Terminus, _ferry.EffectControl_Erinnerung                                },
+
+            { (eObjId)LancelotEffectWeaponObjId.Ascension, _lancelot.EffectControl_KnightOfIce                        },
+            { (eObjId)LancelotEffectWeaponObjId.Terminus, _lancelot.EffectControl_DamascusKnife                       },
+
+            { (eObjId)VaneEffectWeaponObjId.Ascension, _vane.EffectControl_TreuerKrieger                              },
+            { (eObjId)VaneEffectWeaponObjId.Terminus, _vane.EffectControl_Mjolnir                                     },
+
+            { (eObjId)PercivalEffectWeaponObjId.Ascension, _percival.EffectControl_LordOfFlames                       },
+            { (eObjId)PercivalEffectWeaponObjId.Terminus, _percival.EffectControl_Gottfried                           },
+
+            { (eObjId)SiegfriedEffectWeaponObjId.Ascension, _siegfried.EffectControl_Ascalon                          },
+            { (eObjId)SiegfriedEffectWeaponObjId.Terminus, _siegfried.EffectControl_Balmung                           },
+
+            { (eObjId)CharlottaEffectWeaponObjId.Ascension, _charlotta.EffectControl_Claidheamh                       },
+            { (eObjId)CharlottaEffectWeaponObjId.Terminus, _charlotta.EffectControl_Galatine                          },
+
+            { (eObjId)YodarhaEffectWeaponObjId.Ascension, _yodarha.EffectControl_FudoKuniyuki                         },
+            { (eObjId)YodarhaEffectWeaponObjId.Terminus, _yodarha.EffectControl_Swordfish                             },
+
+            { (eObjId)NarmayaEffectWeaponObjId.Ascension, _narmaya.EffectControl_Venustas                             },
+            { (eObjId)NarmayaEffectWeaponObjId.Terminus, _narmaya.EffectControl_AmenoHabakiri                         },
+
+            { (eObjId)GhandagozaEffectWeaponObjId.Ascension, _ghandagoza.EffectControl_GoldenFistsOfUra               },
+            { (eObjId)GhandagozaEffectWeaponObjId.Terminus, _ghandagoza.EffectControl_SkyPiercer                      },
+
+            { (eObjId)ZetaEffectWeaponObjId.Ascension, _zeta.EffectControl_Brionac                                    },
+            { (eObjId)ZetaEffectWeaponObjId.Terminus, _zeta.EffectControl_GaeBulg                                     },
+
+            { (eObjId)VaseragaEffectWeaponObjId.Ascension, _vaseraga.EffectControl_WurtziteScythe                     },
+            { (eObjId)VaseragaEffectWeaponObjId.Terminus, _vaseraga.EffectControl_Ereshkigal                          },
+
+            { (eObjId)CagliostroEffectWeaponObjId.Ascension, _cagliostro.EffectControl_TransmigrationTome             },
+            { (eObjId)CagliostroEffectWeaponObjId.Terminus, _cagliostro.EffectControl_Zosimos                         },
+
+            { (eObjId)IdEffectWeaponObjId.Ascension, _id.EffectControl_Susanoo                                        },
+            { (eObjId)IdEffectWeaponObjId.Terminus, _id.EffectControl_PrimalSwordOfBahamut                            },
+
+            { (eObjId)SandalphonEffectWeaponObjId.Terminus, _sandalphon.EffectControl_WorldEnder                      },
+
+            { (eObjId)SeofonEffectWeaponObjId.Terminus, _seofon.EffectControl_GatewayStarSword                        },
+
+            { (eObjId)TweyenEffectWeaponObjId.Terminus, _tweyen.EffectControl_DesolationCrownBow                      },
+        };
     }
-
-    //static List<string> ObjIdToModelPaths(string modelId)
-    //{
-    //    string category = modelId[..2];
-
-    //    List<string> paths = new();
-
-    //    List<string> filePathFormats = new()
-    //    {
-    //        "model/{0}/{1}/{1}.minfo",
-    //        "model/{0}/{1}/{1}.skeleton",
-    //        "model/{0}/{1}/vars/0.mmat",
-    //        "model_streaming/lod0/{1}.mmesh",
-    //        "model_streaming/lod1/{1}.mmesh",
-    //        "model_streaming/lod2/{1}.mmesh",
-    //        "model_streaming/lod3/{1}.mmesh",
-    //        "model_streaming/shadow_lod0/{0}.mmesh", //Not used by weapons
-    //        "model_streaming/shadow_lod1/{0}.mmesh", //Not used by weapons
-    //        "model_streaming/shadow_lod2/{0}.mmesh", //Not used by weapons
-    //    };
-
-    //    foreach (var format in filePathFormats)
-    //    {
-    //        paths.Add(string.Format(format, category, modelId));
-    //    }
-
-    //    return paths;
-    //}
 
     #region Standard Overrides
     public override void ConfigurationUpdated(Config configuration)
@@ -1265,9 +1142,11 @@ public class Mod : ModBase // <= Do not Remove.
     #endregion
 
     #region For Exports, Serialization etc.
+#pragma warning disable IDE0079 // Remove unnecessary suppression
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public Mod() { }
 #pragma warning restore CS8618
+#pragma warning restore IDE0079 // Remove unnecessary suppression
     #endregion
 
 

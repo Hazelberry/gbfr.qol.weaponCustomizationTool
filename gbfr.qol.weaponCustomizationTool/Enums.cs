@@ -1,520 +1,521 @@
 ﻿
 using System.ComponentModel;
 
-namespace gbfr.qol.weaponCustomizationTool
+namespace gbfr.qol.weaponCustomizationTool;
+
+public enum WeaponEffectControlType
 {
-    public enum WeaponEffectControlType
-    {
-        [Description("Enabled")]
-        Enabled,
+    [Description("Enabled")]
+    Enabled,
 
-        [Description("Combat Only")]
-        CombatOnly,
+    [Description("Combat Only")]
+    CombatOnly,
 
-        [Description("Idle Only")]
-        IdleOnly,
+    [Description("Idle Only")]
+    IdleOnly,
 
-        [Description("Disabled")]
-        Disabled,
-    }
-
-    public enum WeaponEffectToggle
-    {
-        [Description("Enabled")]
-        Enabled = WeaponEffectControlType.Enabled,
-
-        [Description("Disabled")]
-        Disabled = WeaponEffectControlType.Disabled,
-    }
-
-    public enum CaptainWeaponObjId : uint
-    {
-        Travellers_Sword = 0x30000u,
-        Durandal = 0x30001u,
-        Sword_of_Eos = 0x30002u,
-        Albacore_Blade = 0x30003u,
-        Ultima_Sword = 0x30004u,
-        Seven_Star_Sword = 0x30005u,
-
-        Partenza = 0x30100u,
-    }
-
-    public enum KatalinaWeaponObjId : uint
-    {
-        Rukalsa = 0x30200u,
-        Flame_Rapier = 0x30201u,
-        Murgleis = 0x30202u,
-        Luminiera_Sword_Omega = 0x30203u,
-        Ephemeron = 0x30204u,
-        Blutgang = 0x30205u,
-    }
-
-    public enum RackamWeaponObjId : uint
-    {
-        Flintspike = 0x30300u,
-        Wheellock_Axe = 0x30301u,
-        Benedia = 0x30302u,
-        Tiamat_Bolt_Omega = 0x30303u,
-        Stormcloud = 0x30304u,
-        Freikugel = 0x30305u,
-    }
-
-    public enum IoWeaponObjId : uint
-    {
-        Little_Witch_Scepter = 0x30400u,
-        Zhezl = 0x30401u,
-        Gambanteinn = 0x30402u,
-        Colossus_Cane_Omega = 0x30403u,
-        Tupsimati = 0x30404u,
-        Caduceus = 0x30405u,
-    }
-
-    public enum EugenWeaponObjId : uint
-    {
-        Dreyse = 0x30500u,
-        Matchlock = 0x30501u,
-        AK4A = 0x30502u,
-        Leviathan_Muzzle = 0x30503u,
-        Clarion = 0x30504u,
-        Draconic_Fire = 0x30505u,
-    }
-
-    public enum RosettaWeaponObjId : uint
-    {
-        Egoism = 0x30600u,
-        Swordbreaker = 0x30601u,
-        Love_Eternal = 0x30602u,
-        Rose_Crystal_Knife = 0x30603u,
-        Cortana = 0x30604u,
-        Dagger_of_Bahamut_Coda = 0x30605u,
-    }
-
-    public enum FerryWeaponObjId : uint
-    {
-        Geisterpeitche = 0x30700u,
-        Leather_Belt = 0x30701u,
-        Ethereal_Lasher = 0x30702u,
-        Flame_Lit_Curl = 0x30703u,
-        Live_Wire = 0x30704u,
-        Erinnerung = 0x30705u,
-    }
-
-    public enum LancelotWeaponObjId : uint
-    {
-        Altachiara = 0x30800u,
-        Hoarfrost_Blade_Persius = 0x30801u,
-        Blanc_Comme_Neige = 0x30802u,
-        Vegalta = 0x30803u,
-        Knight_of_Ice = 0x30804u,
-        Damascus_Knife = 0x30805u,
-    }
-
-    public enum VaneWeaponObjId : uint
-    {
-        Alabarda = 0x30900u,
-        Swan = 0x30901u,
-        Treuer_Krieger = 0x30902u,
-        Ukonvasara = 0x30903u,
-        Blossom_Axe = 0x30904u,
-        Mjolnir = 0x30905u,
-    }
-
-    public enum PercivalWeaponObjId : uint
-    {
-        Flamberge = 0x31000u,
-        Lohengrin = 0x31001u,
-        Antwerp = 0x31002u,
-        Joyeuse = 0x31003u,
-        Lord_of_Flames = 0x31004u,
-        Gottfried = 0x31005u,
-    }
-
-    public enum SiegfriedWeaponObjId : uint
-    {
-        Integrity = 0x31100u,
-        Broadsword_of_Earth = 0x31101u,
-        Ascalon = 0x31102u,
-        Hrunting = 0x31103u,
-        Windhose = 0x31104u,
-        Balmung = 0x31105u,
-    }
-
-    public enum CharlottaWeaponObjId : uint
-    {
-        Claiomh_Solais = 0x31200u,
-        Arondight = 0x31201u,
-        Claidheamh_Soluis = 0x31202u,
-        Ushumgal = 0x31203u,
-        Sahrivar = 0x31204u,
-        Galatine = 0x31205u,
-    }
-
-    public enum YodarhaWeaponObjId : uint
-    {
-        Kiku_Ichimonji = 0x31300u,
-        Asura = 0x31301u,
-        Fudo_Kuniyuki = 0x31302u,
-        Higurashi = 0x31303u,
-        Xeno_Phantom_Demon_Blade = 0x31304u,
-        Swordfish = 0x31305u,
-    }
-
-    public enum NarmayaWeaponObjId : uint
-    {
-        Nakamaki_Nodachi = 0x31400u,
-        Kotetsu = 0x31401u,
-        Venustas = 0x31402u,
-        Flourithium_Blade = 0x31403u,
-        Blade_of_Purification = 0x31404u,
-        Ameno_Habakiri = 0x31405u,
-    }
-
-    public enum GhandagozaWeaponObjId : uint
-    {
-        Brahma_Gauntlet = 0x31500u,
-        Rope_Knuckles = 0x31501u,
-        Crimson_Finger = 0x31502u,
-        Golden_Fists_of_Ura = 0x31503u,
-        Arkab = 0x31504u,
-        Sky_Piercer = 0x31505u,
-    }
-
-    public enum ZetaWeaponObjId : uint
-    {
-        Spear_of_Arvess = 0x31600u,
-        Sunspot_Spear = 0x31601u,
-        Brionac = 0x31602u,
-        Gisla = 0x31603u,
-        Huanglong_Spear = 0x31604u,
-        Gae_Bulg = 0x31605u,
-    }
-
-    public enum VaseragaWeaponObjId : uint
-    {
-        Great_Scythe_Grynoth = 0x31700u,
-        Alsarav = 0x31701u,
-        Wurtzite_Scythe = 0x31702u,
-        Soul_Eater = 0x31703u,
-        Cosmic_Scythe = 0x31704u,
-        Ereshkigal = 0x31705u,
-    }
-
-    public enum CagliostroWeaponObjId : uint
-    {
-        Magnum_Opus = 0x31800u,
-        Dream_Atlas = 0x31801u,
-        Transmigration_Tome = 0x31802u,
-        Sacred_Codex = 0x31803u,
-        Arshivelle = 0x31804u,
-        Zosimos = 0x31805u,
-    }
-
-    public enum IdWeaponObjId : uint
-    {
-        Ragnarok = 0x31900u,
-        Aviaeth_Faussart = 0x31901u,
-        Susanoo = 0x31902u,
-        Premium_Sword = 0x31903u,
-        Ecke_Sachs = 0x31904u,
-        Sword_of_Bahamut = 0x31905u,
-    }
-
-    public enum SeofonWeaponObjId : uint
-    {
-        Sette_di_Spade = 0x32200u,
-        Gateway_Star_Sword = 0x32206u,
-    }
-
-    public enum TweyenWeaponObjId : uint
-    {
-        Bow_of_Dismissal = 0x32300u,
-        Desolation_Crown_Bow = 0x32306u,
-    }
-
-    public enum SandalphonWeaponObjId : uint
-    {
-        Apprentice = 0x32100u,
-        WorldEnder = 0x32106u,
-    }
-
-    public enum AllWeaponObjId : uint
-    {
-        Captain_Travellers_Sword = 0x30000u,
-        Captain_Durandal = 0x30001u,
-        Captain_Sword_of_Eos = 0x30002u,
-        Captain_Albacore_Blade = 0x30003u,
-        Captain_Ultima_Sword = 0x30004u,
-        Captain_Seven_Star_Sword = 0x30005u,
-        Captain_Partenza = 0x30100u,
-    
-        Katalina_Rukalsa = 0x30200u,
-        Katalina_Flame_Rapier = 0x30201u,
-        Katalina_Murgleis = 0x30202u,
-        Katalina_Luminiera_Sword_Omega = 0x30203u,
-        Katalina_Ephemeron = 0x30204u,
-        Katalina_Blutgang = 0x30205u,
-    
-        Rackam_Flintspike = 0x30300u,
-        Rackam_Wheellock_Axe = 0x30301u,
-        Rackam_Benedia = 0x30302u,
-        Rackam_Tiamat_Bolt_Omega = 0x30303u,
-        Rackam_Stormcloud = 0x30304u,
-        Rackam_Freikugel = 0x30305u,
-    
-        Io_Little_Witch_Scepter = 0x30400u,
-        Io_Zhezl = 0x30401u,
-        Io_Gambanteinn = 0x30402u,
-        Io_Colossus_Cane_Omega = 0x30403u,
-        Io_Tupsimati = 0x30404u,
-        Io_Caduceus = 0x30405u,
-    
-        Eugen_Dreyse = 0x30500u,
-        Eugen_Matchlock = 0x30501u,
-        Eugen_AK4A = 0x30502u,
-        Eugen_Leviathan_Muzzle = 0x30503u,
-        Eugen_Clarion = 0x30504u,
-        Eugen_Draconic_Fire = 0x30505u,
-    
-        Rosetta_Egoism = 0x30600u,
-        Rosetta_Swordbreaker = 0x30601u,
-        Rosetta_Love_Eternal = 0x30602u,
-        Rosetta_Rose_Crystal_Knife = 0x30603u,
-        Rosetta_Cortana = 0x30604u,
-        Rosetta_Dagger_of_Bahamut_Coda = 0x30605u,
-    
-        Ferry_Geisterpeitche = 0x30700u,
-        Ferry_Leather_Belt = 0x30701u,
-        Ferry_Ethereal_Lasher = 0x30702u,
-        Ferry_Flame_Lit_Curl = 0x30703u,
-        Ferry_Live_Wire = 0x30704u,
-        Ferry_Erinnerung = 0x30705u,
-    
-        Lancelot_Altachiara = 0x30800u,
-        Lancelot_Hoarfrost_Blade_Persius = 0x30801u,
-        Lancelot_Blanc_Comme_Neige = 0x30802u,
-        Lancelot_Vegalta = 0x30803u,
-        Lancelot_Knight_of_Ice = 0x30804u,
-        Lancelot_Damascus_Knife = 0x30805u,
-    
-        Vane_Alabarda = 0x30900u,
-        Vane_Swan = 0x30901u,
-        Vane_Treuer_Krieger = 0x30902u,
-        Vane_Ukonvasara = 0x30903u,
-        Vane_Blossom_Axe = 0x30904u,
-        Vane_Mjolnir = 0x30905u,
-    
-        Percival_Flamberge = 0x31000u,
-        Percival_Lohengrin = 0x31001u,
-        Percival_Antwerp = 0x31002u,
-        Percival_Joyeuse = 0x31003u,
-        Percival_Lord_of_Flames = 0x31004u,
-        Percival_Gottfried = 0x31005u,
-    
-        Siegfried_Integrity = 0x31100u,
-        Siegfried_Broadsword_of_Earth = 0x31101u,
-        Siegfried_Ascalon = 0x31102u,
-        Siegfried_Hrunting = 0x31103u,
-        Siegfried_Windhose = 0x31104u,
-        Siegfried_Balmung = 0x31105u,
-    
-        Charlotta_Claiomh_Solais = 0x31200u,
-        Charlotta_Arondight = 0x31201u,
-        Charlotta_Claidheamh_Soluis = 0x31202u,
-        Charlotta_Ushumgal = 0x31203u,
-        Charlotta_Sahrivar = 0x31204u,
-        Charlotta_Galatine = 0x31205u,
-    
-        Yodarha_Kiku_Ichimonji = 0x31300u,
-        Yodarha_Asura = 0x31301u,
-        Yodarha_Fudo_Kuniyuki = 0x31302u,
-        Yodarha_Higurashi = 0x31303u,
-        Yodarha_Xeno_Phantom_Demon_Blade = 0x31304u,
-        Yodarha_Swordfish = 0x31305u,
-    
-        Narmaya_Nakamaki_Nodachi = 0x31400u,
-        Narmaya_Kotetsu = 0x31401u,
-        Narmaya_Venustas = 0x31402u,
-        Narmaya_Flourithium_Blade = 0x31403u,
-        Narmaya_Blade_of_Purification = 0x31404u,
-        Narmaya_Ameno_Habakiri = 0x31405u,
-    
-        Ghandagoza_Brahma_Gauntlet = 0x31500u,
-        Ghandagoza_Rope_Knuckles = 0x31501u,
-        Ghandagoza_Crimson_Finger = 0x31502u,
-        Ghandagoza_Golden_Fists_of_Ura = 0x31503u,
-        Ghandagoza_Arkab = 0x31504u,
-        Ghandagoza_Sky_Piercer = 0x31505u,
-    
-        Zeta_Spear_of_Arvess = 0x31600u,
-        Zeta_Sunspot_Spear = 0x31601u,
-        Zeta_Brionac = 0x31602u,
-        Zeta_Gisla = 0x31603u,
-        Zeta_Huanglong_Spear = 0x31604u,
-        Zeta_Gae_Bulg = 0x31605u,
-    
-        Vaseraga_Great_Scythe_Grynoth = 0x31700u,
-        Vaseraga_Alsarav = 0x31701u,
-        Vaseraga_Wurtzite_Scythe = 0x31702u,
-        Vaseraga_Soul_Eater = 0x31703u,
-        Vaseraga_Cosmic_Scythe = 0x31704u,
-        Vaseraga_Ereshkigal = 0x31705u,
-    
-        Cagliostro_Magnum_Opus = 0x31800u,
-        Cagliostro_Dream_Atlas = 0x31801u,
-        Cagliostro_Transmigration_Tome = 0x31802u,
-        Cagliostro_Sacred_Codex = 0x31803u,
-        Cagliostro_Arshivelle = 0x31804u,
-        Cagliostro_Zosimos = 0x31805u,
-    
-        Id_Ragnarok = 0x31900u,
-        Id_Aviaeth_Faussart = 0x31901u,
-        Id_Susanoo = 0x31902u,
-        Id_Premium_Sword = 0x31903u,
-        Id_Ecke_Sachs = 0x31904u,
-        Id_Sword_of_Bahamut = 0x31905u,
-    
-        Seofon_Sette_di_Spade = 0x32200u,
-        Seofon_Gateway_Star_Sword = 0x32206u,
-    
-        Tweyen_Bow_of_Dismissal = 0x32300u,
-        Tweyen_Desolation_Crown_Bow = 0x32306u,
-    
-        Sandalphon_Apprentice = 0x32100u,
-        Sandalphon_WorldEnder = 0x32106u,
-    }
-
-    #region Weapons With Effects
-    public enum CaptainEffectWeaponObjId : uint
-    {
-        Ascension = CaptainWeaponObjId.Sword_of_Eos,
-        Terminus = CaptainWeaponObjId.Seven_Star_Sword,
-    }
-
-    public enum KatalinaEffectWeaponObjId : uint
-    {
-        Ascension = KatalinaWeaponObjId.Murgleis,
-        Terminus = KatalinaWeaponObjId.Blutgang,
-    }
-
-    public enum RackamEffectWeaponObjId : uint
-    {
-        Ascension = RackamWeaponObjId.Benedia,
-        Terminus = RackamWeaponObjId.Freikugel,
-    }
-
-    public enum IoEffectWeaponObjId : uint
-    {
-        Ascension = IoWeaponObjId.Gambanteinn,
-        Terminus = IoWeaponObjId.Caduceus,
-    }
-
-    public enum EugenEffectWeaponObjId : uint
-    {
-        Ascension = EugenWeaponObjId.AK4A,
-        Terminus = EugenWeaponObjId.Draconic_Fire,
-    }
-
-    public enum RosettaEffectWeaponObjId : uint
-    {
-        Ascension = RosettaWeaponObjId.Love_Eternal,
-        Flame = RosettaWeaponObjId.Cortana,
-        Terminus = RosettaWeaponObjId.Dagger_of_Bahamut_Coda,
-    }
-
-    public enum FerryEffectWeaponObjId : uint
-    {
-        Ghostly = FerryWeaponObjId.Geisterpeitche,
-        Ascension = FerryWeaponObjId.Erinnerung,
-        Flame = FerryWeaponObjId.Flame_Lit_Curl,
-        Electric = FerryWeaponObjId.Live_Wire,
-        Terminus = FerryWeaponObjId.Ethereal_Lasher,
-    }
-
-    public enum LancelotEffectWeaponObjId : uint
-    {
-        Ascension = LancelotWeaponObjId.Knight_of_Ice,
-        Terminus = LancelotWeaponObjId.Damascus_Knife,
-    }
-
-    public enum VaneEffectWeaponObjId : uint
-    {
-        Ascension = VaneWeaponObjId.Treuer_Krieger,
-        Terminus = VaneWeaponObjId.Mjolnir,
-    }
-
-    public enum PercivalEffectWeaponObjId : uint
-    {
-        Ascension = PercivalWeaponObjId.Lord_of_Flames,
-        Terminus = PercivalWeaponObjId.Gottfried,
-    }
-
-    public enum SiegfriedEffectWeaponObjId : uint
-    {
-        Ascension = SiegfriedWeaponObjId.Ascalon,
-        Terminus = SiegfriedWeaponObjId.Balmung,
-    }
-
-    public enum CharlottaEffectWeaponObjId : uint
-    {
-        Ascension = CharlottaWeaponObjId.Claidheamh_Soluis,
-        Terminus = CharlottaWeaponObjId.Galatine,
-    }
-
-    public enum YodarhaEffectWeaponObjId : uint
-    {
-        Ascension = YodarhaWeaponObjId.Fudo_Kuniyuki,
-        Terminus = YodarhaWeaponObjId.Swordfish,
-    }
-
-    public enum NarmayaEffectWeaponObjId : uint
-    {
-        Ascension = NarmayaWeaponObjId.Venustas,
-        Terminus = NarmayaWeaponObjId.Ameno_Habakiri,
-    }
-
-    public enum GhandagozaEffectWeaponObjId : uint
-    {
-        Ascension = GhandagozaWeaponObjId.Golden_Fists_of_Ura,
-        Terminus = GhandagozaWeaponObjId.Sky_Piercer,
-    }
-
-    public enum ZetaEffectWeaponObjId : uint
-    {
-        Ascension = ZetaWeaponObjId.Brionac,
-        Terminus = ZetaWeaponObjId.Gae_Bulg,
-    }
-
-    public enum VaseragaEffectWeaponObjId : uint
-    {
-        Ascension = VaseragaWeaponObjId.Wurtzite_Scythe,
-        Terminus = VaseragaWeaponObjId.Ereshkigal,
-    }
-
-    public enum CagliostroEffectWeaponObjId : uint
-    {
-        Ascension = CagliostroWeaponObjId.Transmigration_Tome,
-        Terminus = CagliostroWeaponObjId.Zosimos,
-    }
-
-    public enum IdEffectWeaponObjId : uint
-    {
-        Ascension = IdWeaponObjId.Susanoo,
-        Terminus = IdWeaponObjId.Sword_of_Bahamut,
-    }
-
-    public enum SandalphonEffectWeaponObjId : uint
-    {
-        Terminus = SandalphonWeaponObjId.WorldEnder,
-    }
-
-    public enum SeofonEffectWeaponObjId : uint
-    {
-        Terminus = SeofonWeaponObjId.Gateway_Star_Sword,
-    }
-
-    public enum TweyenEffectWeaponObjId : uint
-    {
-        Terminus = TweyenWeaponObjId.Desolation_Crown_Bow,
-    }
-    #endregion
+    [Description("Disabled")]
+    Disabled,
 }
+
+public enum WeaponEffectToggle
+{
+    [Description("Enabled")]
+    Enabled = WeaponEffectControlType.Enabled,
+
+    [Description("Disabled")]
+    Disabled = WeaponEffectControlType.Disabled,
+}
+
+#region Character specific Weapon ObjIds
+public enum CaptainWeaponObjId : uint
+{
+    Travellers_Sword = AllWeaponObjId.Captain_Travellers_Sword,
+    Durandal = AllWeaponObjId.Captain_Durandal,
+    Sword_of_Eos = AllWeaponObjId.Captain_Sword_of_Eos,
+    Albacore_Blade = AllWeaponObjId.Captain_Albacore_Blade,
+    Ultima_Sword = AllWeaponObjId.Captain_Ultima_Sword,
+    Seven_Star_Sword = AllWeaponObjId.Captain_Seven_Star_Sword,
+
+    Partenza = AllWeaponObjId.Captain_Partenza,
+}
+
+public enum KatalinaWeaponObjId : uint
+{
+    Rukalsa = AllWeaponObjId.Katalina_Rukalsa,
+    Flame_Rapier = AllWeaponObjId.Katalina_Flame_Rapier,
+    Murgleis = AllWeaponObjId.Katalina_Murgleis,
+    Luminiera_Sword_Omega = AllWeaponObjId.Katalina_Luminiera_Sword_Omega,
+    Ephemeron = AllWeaponObjId.Katalina_Ephemeron,
+    Blutgang = AllWeaponObjId.Katalina_Blutgang,
+}
+
+public enum RackamWeaponObjId : uint
+{
+    Flintspike = AllWeaponObjId.Rackam_Flintspike,
+    Wheellock_Axe = AllWeaponObjId.Rackam_Wheellock_Axe,
+    Benedia = AllWeaponObjId.Rackam_Benedia,
+    Tiamat_Bolt_Omega = AllWeaponObjId.Rackam_Tiamat_Bolt_Omega,
+    Stormcloud = AllWeaponObjId.Rackam_Stormcloud,
+    Freikugel = AllWeaponObjId.Rackam_Freikugel,
+}
+
+public enum IoWeaponObjId : uint
+{
+    Little_Witch_Scepter = AllWeaponObjId.Io_Little_Witch_Scepter,
+    Zhezl = AllWeaponObjId.Io_Zhezl,
+    Gambanteinn = AllWeaponObjId.Io_Gambanteinn,
+    Colossus_Cane_Omega = AllWeaponObjId.Io_Colossus_Cane_Omega,
+    Tupsimati = AllWeaponObjId.Io_Tupsimati,
+    Caduceus = AllWeaponObjId.Io_Caduceus,
+}
+
+public enum EugenWeaponObjId : uint
+{
+    Dreyse = AllWeaponObjId.Eugen_Dreyse,
+    Matchlock = AllWeaponObjId.Eugen_Matchlock,
+    AK4A = AllWeaponObjId.Eugen_AK4A,
+    Leviathan_Muzzle = AllWeaponObjId.Eugen_Leviathan_Muzzle,
+    Clarion = AllWeaponObjId.Eugen_Clarion,
+    Draconic_Fire = AllWeaponObjId.Eugen_Draconic_Fire,
+}
+
+public enum RosettaWeaponObjId : uint
+{
+    Egoism = AllWeaponObjId.Rosetta_Egoism,
+    Swordbreaker = AllWeaponObjId.Rosetta_Swordbreaker,
+    Love_Eternal = AllWeaponObjId.Rosetta_Love_Eternal,
+    Rose_Crystal_Knife = AllWeaponObjId.Rosetta_Rose_Crystal_Knife,
+    Cortana = AllWeaponObjId.Rosetta_Cortana,
+    Dagger_of_Bahamut_Coda = AllWeaponObjId.Rosetta_Dagger_of_Bahamut_Coda,
+}
+
+public enum FerryWeaponObjId : uint
+{
+    Geisterpeitche = AllWeaponObjId.Ferry_Geisterpeitche,
+    Leather_Belt = AllWeaponObjId.Ferry_Leather_Belt,
+    Ethereal_Lasher = AllWeaponObjId.Ferry_Ethereal_Lasher,
+    Flame_Lit_Curl = AllWeaponObjId.Ferry_Flame_Lit_Curl,
+    Live_Wire = AllWeaponObjId.Ferry_Live_Wire,
+    Erinnerung = AllWeaponObjId.Ferry_Erinnerung,
+}
+
+public enum LancelotWeaponObjId : uint
+{
+    Altachiara = AllWeaponObjId.Lancelot_Altachiara,
+    Hoarfrost_Blade_Persius = AllWeaponObjId.Lancelot_Hoarfrost_Blade_Persius,
+    Blanc_Comme_Neige = AllWeaponObjId.Lancelot_Blanc_Comme_Neige,
+    Vegalta = AllWeaponObjId.Lancelot_Vegalta,
+    Knight_of_Ice = AllWeaponObjId.Lancelot_Knight_of_Ice,
+    Damascus_Knife = AllWeaponObjId.Lancelot_Damascus_Knife,
+}
+
+public enum VaneWeaponObjId : uint
+{
+    Alabarda = AllWeaponObjId.Vane_Alabarda,
+    Swan = AllWeaponObjId.Vane_Swan,
+    Treuer_Krieger = AllWeaponObjId.Vane_Treuer_Krieger,
+    Ukonvasara = AllWeaponObjId.Vane_Ukonvasara,
+    Blossom_Axe = AllWeaponObjId.Vane_Blossom_Axe,
+    Mjolnir = AllWeaponObjId.Vane_Mjolnir,
+}
+
+public enum PercivalWeaponObjId : uint
+{
+    Flamberge = AllWeaponObjId.Percival_Flamberge,
+    Lohengrin = AllWeaponObjId.Percival_Lohengrin,
+    Antwerp = AllWeaponObjId.Percival_Antwerp,
+    Joyeuse = AllWeaponObjId.Percival_Joyeuse,
+    Lord_of_Flames = AllWeaponObjId.Percival_Lord_of_Flames,
+    Gottfried = AllWeaponObjId.Percival_Gottfried,
+}
+
+public enum SiegfriedWeaponObjId : uint
+{
+    Integrity = AllWeaponObjId.Siegfried_Integrity,
+    Broadsword_of_Earth = AllWeaponObjId.Siegfried_Broadsword_of_Earth,
+    Ascalon = AllWeaponObjId.Siegfried_Ascalon,
+    Hrunting = AllWeaponObjId.Siegfried_Hrunting,
+    Windhose = AllWeaponObjId.Siegfried_Windhose,
+    Balmung = AllWeaponObjId.Siegfried_Balmung,
+}
+
+public enum CharlottaWeaponObjId : uint
+{
+    Claiomh_Solais = AllWeaponObjId.Charlotta_Claiomh_Solais,
+    Arondight = AllWeaponObjId.Charlotta_Arondight,
+    Claidheamh_Soluis = AllWeaponObjId.Charlotta_Claidheamh_Soluis,
+    Ushumgal = AllWeaponObjId.Charlotta_Ushumgal,
+    Sahrivar = AllWeaponObjId.Charlotta_Sahrivar,
+    Galatine = AllWeaponObjId.Charlotta_Galatine,
+}
+
+public enum YodarhaWeaponObjId : uint
+{
+    Kiku_Ichimonji = AllWeaponObjId.Yodarha_Kiku_Ichimonji,
+    Asura = AllWeaponObjId.Yodarha_Asura,
+    Fudo_Kuniyuki = AllWeaponObjId.Yodarha_Fudo_Kuniyuki,
+    Higurashi = AllWeaponObjId.Yodarha_Higurashi,
+    Xeno_Phantom_Demon_Blade = AllWeaponObjId.Yodarha_Xeno_Phantom_Demon_Blade,
+    Swordfish = AllWeaponObjId.Yodarha_Swordfish,
+}
+
+public enum NarmayaWeaponObjId : uint
+{
+    Nakamaki_Nodachi = AllWeaponObjId.Narmaya_Nakamaki_Nodachi,
+    Kotetsu = AllWeaponObjId.Narmaya_Kotetsu,
+    Venustas = AllWeaponObjId.Narmaya_Venustas,
+    Flourithium_Blade = AllWeaponObjId.Narmaya_Flourithium_Blade,
+    Blade_of_Purification = AllWeaponObjId.Narmaya_Blade_of_Purification,
+    Ameno_Habakiri = AllWeaponObjId.Narmaya_Ameno_Habakiri,
+}
+
+public enum GhandagozaWeaponObjId : uint
+{
+    Brahma_Gauntlet = AllWeaponObjId.Ghandagoza_Brahma_Gauntlet,
+    Rope_Knuckles = AllWeaponObjId.Ghandagoza_Rope_Knuckles,
+    Crimson_Finger = AllWeaponObjId.Ghandagoza_Crimson_Finger,
+    Golden_Fists_of_Ura = AllWeaponObjId.Ghandagoza_Golden_Fists_of_Ura,
+    Arkab = AllWeaponObjId.Ghandagoza_Arkab,
+    Sky_Piercer = AllWeaponObjId.Ghandagoza_Sky_Piercer,
+}
+
+public enum ZetaWeaponObjId : uint
+{
+    Spear_of_Arvess = AllWeaponObjId.Zeta_Spear_of_Arvess,
+    Sunspot_Spear = AllWeaponObjId.Zeta_Sunspot_Spear,
+    Brionac = AllWeaponObjId.Zeta_Brionac,
+    Gisla = AllWeaponObjId.Zeta_Gisla,
+    Huanglong_Spear = AllWeaponObjId.Zeta_Huanglong_Spear,
+    Gae_Bulg = AllWeaponObjId.Zeta_Gae_Bulg,
+}
+
+public enum VaseragaWeaponObjId : uint
+{
+    Great_Scythe_Grynoth = AllWeaponObjId.Vaseraga_Great_Scythe_Grynoth,
+    Alsarav = AllWeaponObjId.Vaseraga_Alsarav,
+    Wurtzite_Scythe = AllWeaponObjId.Vaseraga_Wurtzite_Scythe,
+    Soul_Eater = AllWeaponObjId.Vaseraga_Soul_Eater,
+    Cosmic_Scythe = AllWeaponObjId.Vaseraga_Cosmic_Scythe,
+    Ereshkigal = AllWeaponObjId.Vaseraga_Ereshkigal,
+}
+
+public enum CagliostroWeaponObjId : uint
+{
+    Magnum_Opus = AllWeaponObjId.Cagliostro_Magnum_Opus,
+    Dream_Atlas = AllWeaponObjId.Cagliostro_Dream_Atlas,
+    Transmigration_Tome = AllWeaponObjId.Cagliostro_Transmigration_Tome,
+    Sacred_Codex = AllWeaponObjId.Cagliostro_Sacred_Codex,
+    Arshivelle = AllWeaponObjId.Cagliostro_Arshivelle,
+    Zosimos = AllWeaponObjId.Cagliostro_Zosimos,
+}
+
+public enum IdWeaponObjId : uint
+{
+    Ragnarok = AllWeaponObjId.Id_Ragnarok,
+    Aviaeth_Faussart = AllWeaponObjId.Id_Aviaeth_Faussart,
+    Susanoo = AllWeaponObjId.Id_Susanoo,
+    Premium_Sword = AllWeaponObjId.Id_Premium_Sword,
+    Ecke_Sachs = AllWeaponObjId.Id_Ecke_Sachs,
+    Sword_of_Bahamut = AllWeaponObjId.Id_Sword_of_Bahamut,
+}
+
+public enum SeofonWeaponObjId : uint
+{
+    Sette_di_Spade = AllWeaponObjId.Seofon_Sette_di_Spade,
+    Gateway_Star_Sword = AllWeaponObjId.Seofon_Gateway_Star_Sword,
+}
+
+public enum TweyenWeaponObjId : uint
+{
+    Bow_of_Dismissal = AllWeaponObjId.Tweyen_Bow_of_Dismissal,
+    Desolation_Crown_Bow = AllWeaponObjId.Tweyen_Desolation_Crown_Bow,
+}
+
+public enum SandalphonWeaponObjId : uint
+{
+    Apprentice = AllWeaponObjId.Sandalphon_Apprentice,
+    World_Ender = AllWeaponObjId.Sandalphon_World_Ender,
+}
+#endregion
+
+public enum AllWeaponObjId : uint
+{
+    Captain_Travellers_Sword = eObjId.WP_Captain_Travellers_Sword,
+    Captain_Durandal = eObjId.WP_Captain_Durandal,
+    Captain_Sword_of_Eos = eObjId.WP_Captain_Sword_of_Eos,
+    Captain_Albacore_Blade = eObjId.WP_Captain_Albacore_Blade,
+    Captain_Ultima_Sword = eObjId.WP_Captain_Ultima_Sword,
+    Captain_Seven_Star_Sword = eObjId.WP_Captain_Seven_Star_Sword,
+    Captain_Partenza = eObjId.WP_Captain_Partenza,
+
+    Katalina_Rukalsa = eObjId.WP_Katalina_Rukalsa,
+    Katalina_Flame_Rapier = eObjId.WP_Katalina_Flame_Rapier,
+    Katalina_Murgleis = eObjId.WP_Katalina_Murgleis,
+    Katalina_Luminiera_Sword_Omega = eObjId.WP_Katalina_Luminiera_Sword_Omega,
+    Katalina_Ephemeron = eObjId.WP_Katalina_Ephemeron,
+    Katalina_Blutgang = eObjId.WP_Katalina_Blutgang,
+
+    Rackam_Flintspike = eObjId.WP_Rackam_Flintspike,
+    Rackam_Wheellock_Axe = eObjId.WP_Rackam_Wheellock_Axe,
+    Rackam_Benedia = eObjId.WP_Rackam_Benedia,
+    Rackam_Tiamat_Bolt_Omega = eObjId.WP_Rackam_Tiamat_Bolt_Omega,
+    Rackam_Stormcloud = eObjId.WP_Rackam_Stormcloud,
+    Rackam_Freikugel = eObjId.WP_Rackam_Freikugel,
+
+    Io_Little_Witch_Scepter = eObjId.WP_Io_Little_Witch_Scepter,
+    Io_Zhezl = eObjId.WP_Io_Zhezl,
+    Io_Gambanteinn = eObjId.WP_Io_Gambanteinn,
+    Io_Colossus_Cane_Omega = eObjId.WP_Io_Colossus_Cane_Omega,
+    Io_Tupsimati = eObjId.WP_Io_Tupsimati,
+    Io_Caduceus = eObjId.WP_Io_Caduceus,
+
+    Eugen_Dreyse = eObjId.WP_Eugen_Dreyse,
+    Eugen_Matchlock = eObjId.WP_Eugen_Matchlock,
+    Eugen_AK4A = eObjId.WP_Eugen_AK4A,
+    Eugen_Leviathan_Muzzle = eObjId.WP_Eugen_Leviathan_Muzzle,
+    Eugen_Clarion = eObjId.WP_Eugen_Clarion,
+    Eugen_Draconic_Fire = eObjId.WP_Eugen_Draconic_Fire,
+
+    Rosetta_Egoism = eObjId.WP_Rosetta_Egoism,
+    Rosetta_Swordbreaker = eObjId.WP_Rosetta_Swordbreaker,
+    Rosetta_Love_Eternal = eObjId.WP_Rosetta_Love_Eternal,
+    Rosetta_Rose_Crystal_Knife = eObjId.WP_Rosetta_Rose_Crystal_Knife,
+    Rosetta_Cortana = eObjId.WP_Rosetta_Cortana,
+    Rosetta_Dagger_of_Bahamut_Coda = eObjId.WP_Rosetta_Dagger_of_Bahamut_Coda,
+
+    Ferry_Geisterpeitche = eObjId.WP_Ferry_Geisterpeitche,
+    Ferry_Leather_Belt = eObjId.WP_Ferry_Leather_Belt,
+    Ferry_Ethereal_Lasher = eObjId.WP_Ferry_Ethereal_Lasher,
+    Ferry_Flame_Lit_Curl = eObjId.WP_Ferry_Flame_Lit_Curl,
+    Ferry_Live_Wire = eObjId.WP_Ferry_Live_Wire,
+    Ferry_Erinnerung = eObjId.WP_Ferry_Erinnerung,
+
+    Lancelot_Altachiara = eObjId.WP_Lancelot_Altachiara,
+    Lancelot_Hoarfrost_Blade_Persius = eObjId.WP_Lancelot_Hoarfrost_Blade_Persius,
+    Lancelot_Blanc_Comme_Neige = eObjId.WP_Lancelot_Blanc_Comme_Neige,
+    Lancelot_Vegalta = eObjId.WP_Lancelot_Vegalta,
+    Lancelot_Knight_of_Ice = eObjId.WP_Lancelot_Knight_of_Ice,
+    Lancelot_Damascus_Knife = eObjId.WP_Lancelot_Damascus_Knife,
+
+    Vane_Alabarda = eObjId.WP_Vane_Alabarda,
+    Vane_Swan = eObjId.WP_Vane_Swan,
+    Vane_Treuer_Krieger = eObjId.WP_Vane_Treuer_Krieger,
+    Vane_Ukonvasara = eObjId.WP_Vane_Ukonvasara,
+    Vane_Blossom_Axe = eObjId.WP_Vane_Blossom_Axe,
+    Vane_Mjolnir = eObjId.WP_Vane_Mjolnir,
+
+    Percival_Flamberge = eObjId.WP_Percival_Flamberge,
+    Percival_Lohengrin = eObjId.WP_Percival_Lohengrin,
+    Percival_Antwerp = eObjId.WP_Percival_Antwerp,
+    Percival_Joyeuse = eObjId.WP_Percival_Joyeuse,
+    Percival_Lord_of_Flames = eObjId.WP_Percival_Lord_of_Flames,
+    Percival_Gottfried = eObjId.WP_Percival_Gottfried,
+
+    Siegfried_Integrity = eObjId.WP_Siegfried_Integrity,
+    Siegfried_Broadsword_of_Earth = eObjId.WP_Siegfried_Broadsword_of_Earth,
+    Siegfried_Ascalon = eObjId.WP_Siegfried_Ascalon,
+    Siegfried_Hrunting = eObjId.WP_Siegfried_Hrunting,
+    Siegfried_Windhose = eObjId.WP_Siegfried_Windhose,
+    Siegfried_Balmung = eObjId.WP_Siegfried_Balmung,
+
+    Charlotta_Claiomh_Solais = eObjId.WP_Charlotta_Claiomh_Solais,
+    Charlotta_Arondight = eObjId.WP_Charlotta_Arondight,
+    Charlotta_Claidheamh_Soluis = eObjId.WP_Charlotta_Claidheamh_Soluis,
+    Charlotta_Ushumgal = eObjId.WP_Charlotta_Ushumgal,
+    Charlotta_Sahrivar = eObjId.WP_Charlotta_Sahrivar,
+    Charlotta_Galatine = eObjId.WP_Charlotta_Galatine,
+
+    Yodarha_Kiku_Ichimonji = eObjId.WP_Yodarha_Kiku_Ichimonji,
+    Yodarha_Asura = eObjId.WP_Yodarha_Asura,
+    Yodarha_Fudo_Kuniyuki = eObjId.WP_Yodarha_Fudo_Kuniyuki,
+    Yodarha_Higurashi = eObjId.WP_Yodarha_Higurashi,
+    Yodarha_Xeno_Phantom_Demon_Blade = eObjId.WP_Yodarha_Xeno_Phantom_Demon_Blade,
+    Yodarha_Swordfish = eObjId.WP_Yodarha_Swordfish,
+
+    Narmaya_Nakamaki_Nodachi = eObjId.WP_Narmaya_Nakamaki_Nodachi,
+    Narmaya_Kotetsu = eObjId.WP_Narmaya_Kotetsu,
+    Narmaya_Venustas = eObjId.WP_Narmaya_Venustas,
+    Narmaya_Flourithium_Blade = eObjId.WP_Narmaya_Flourithium_Blade,
+    Narmaya_Blade_of_Purification = eObjId.WP_Narmaya_Blade_of_Purification,
+    Narmaya_Ameno_Habakiri = eObjId.WP_Narmaya_Ameno_Habakiri,
+
+    Ghandagoza_Brahma_Gauntlet = eObjId.WP_Ghandagoza_Brahma_Gauntlet,
+    Ghandagoza_Rope_Knuckles = eObjId.WP_Ghandagoza_Rope_Knuckles,
+    Ghandagoza_Crimson_Finger = eObjId.WP_Ghandagoza_Crimson_Finger,
+    Ghandagoza_Golden_Fists_of_Ura = eObjId.WP_Ghandagoza_Golden_Fists_of_Ura,
+    Ghandagoza_Arkab = eObjId.WP_Ghandagoza_Arkab,
+    Ghandagoza_Sky_Piercer = eObjId.WP_Ghandagoza_Sky_Piercer,
+
+    Zeta_Spear_of_Arvess = eObjId.WP_Zeta_Spear_of_Arvess,
+    Zeta_Sunspot_Spear = eObjId.WP_Zeta_Sunspot_Spear,
+    Zeta_Brionac = eObjId.WP_Zeta_Brionac,
+    Zeta_Gisla = eObjId.WP_Zeta_Gisla,
+    Zeta_Huanglong_Spear = eObjId.WP_Zeta_Huanglong_Spear,
+    Zeta_Gae_Bulg = eObjId.WP_Zeta_Gae_Bulg,
+
+    Vaseraga_Great_Scythe_Grynoth = eObjId.WP_Vaseraga_Great_Scythe_Grynoth,
+    Vaseraga_Alsarav = eObjId.WP_Vaseraga_Alsarav,
+    Vaseraga_Wurtzite_Scythe = eObjId.WP_Vaseraga_Wurtzite_Scythe,
+    Vaseraga_Soul_Eater = eObjId.WP_Vaseraga_Soul_Eater,
+    Vaseraga_Cosmic_Scythe = eObjId.WP_Vaseraga_Cosmic_Scythe,
+    Vaseraga_Ereshkigal = eObjId.WP_Vaseraga_Ereshkigal,
+
+    Cagliostro_Magnum_Opus = eObjId.WP_Cagliostro_Magnum_Opus,
+    Cagliostro_Dream_Atlas = eObjId.WP_Cagliostro_Dream_Atlas,
+    Cagliostro_Transmigration_Tome = eObjId.WP_Cagliostro_Transmigration_Tome,
+    Cagliostro_Sacred_Codex = eObjId.WP_Cagliostro_Sacred_Codex,
+    Cagliostro_Arshivelle = eObjId.WP_Cagliostro_Arshivelle,
+    Cagliostro_Zosimos = eObjId.WP_Cagliostro_Zosimos,
+
+    Id_Ragnarok = eObjId.WP_Id_Ragnarok,
+    Id_Aviaeth_Faussart = eObjId.WP_Id_Aviaeth_Faussart,
+    Id_Susanoo = eObjId.WP_Id_Susanoo,
+    Id_Premium_Sword = eObjId.WP_Id_Premium_Sword,
+    Id_Ecke_Sachs = eObjId.WP_Id_Ecke_Sachs,
+    Id_Sword_of_Bahamut = eObjId.WP_Id_Sword_of_Bahamut,
+
+    Seofon_Sette_di_Spade = eObjId.WP_Seofon_Sette_di_Spade,
+    Seofon_Gateway_Star_Sword = eObjId.WP_Seofon_Gateway_Star_Sword,
+
+    Tweyen_Bow_of_Dismissal = eObjId.WP_Tweyen_Bow_of_Dismissal,
+    Tweyen_Desolation_Crown_Bow = eObjId.WP_Tweyen_Desolation_Crown_Bow,
+
+    Sandalphon_Apprentice = eObjId.WP_Sandalphon_Apprentice,
+    Sandalphon_World_Ender = eObjId.WP_Sandalphon_World_Ender,
+}
+
+#region Weapons With Effects
+public enum CaptainEffectWeaponObjId : uint
+{
+    Ascension = CaptainWeaponObjId.Sword_of_Eos,
+    Terminus = CaptainWeaponObjId.Seven_Star_Sword,
+}
+
+public enum KatalinaEffectWeaponObjId : uint
+{
+    Ascension = KatalinaWeaponObjId.Murgleis,
+    Terminus = KatalinaWeaponObjId.Blutgang,
+}
+
+public enum RackamEffectWeaponObjId : uint
+{
+    Ascension = RackamWeaponObjId.Benedia,
+    Terminus = RackamWeaponObjId.Freikugel,
+}
+
+public enum IoEffectWeaponObjId : uint
+{
+    Ascension = IoWeaponObjId.Gambanteinn,
+    Terminus = IoWeaponObjId.Caduceus,
+}
+
+public enum EugenEffectWeaponObjId : uint
+{
+    Ascension = EugenWeaponObjId.AK4A,
+    Terminus = EugenWeaponObjId.Draconic_Fire,
+}
+
+public enum RosettaEffectWeaponObjId : uint
+{
+    Ascension = RosettaWeaponObjId.Love_Eternal,
+    Flame = RosettaWeaponObjId.Cortana,
+    Terminus = RosettaWeaponObjId.Dagger_of_Bahamut_Coda,
+}
+
+public enum FerryEffectWeaponObjId : uint
+{
+    Ghostly = FerryWeaponObjId.Geisterpeitche,
+    Ascension = FerryWeaponObjId.Erinnerung, // Yep, wp0705 is ascension not terminus.
+    Flame = FerryWeaponObjId.Flame_Lit_Curl,
+    Electric = FerryWeaponObjId.Live_Wire,
+    Terminus = FerryWeaponObjId.Ethereal_Lasher, // And yep, wp0702 is terminus. Very weird.
+}
+
+public enum LancelotEffectWeaponObjId : uint
+{
+    Ascension = LancelotWeaponObjId.Knight_of_Ice,
+    Terminus = LancelotWeaponObjId.Damascus_Knife,
+}
+
+public enum VaneEffectWeaponObjId : uint
+{
+    Ascension = VaneWeaponObjId.Treuer_Krieger,
+    Terminus = VaneWeaponObjId.Mjolnir,
+}
+
+public enum PercivalEffectWeaponObjId : uint
+{
+    Ascension = PercivalWeaponObjId.Lord_of_Flames,
+    Terminus = PercivalWeaponObjId.Gottfried,
+}
+
+public enum SiegfriedEffectWeaponObjId : uint
+{
+    Ascension = SiegfriedWeaponObjId.Ascalon,
+    Terminus = SiegfriedWeaponObjId.Balmung,
+}
+
+public enum CharlottaEffectWeaponObjId : uint
+{
+    Ascension = CharlottaWeaponObjId.Claidheamh_Soluis,
+    Terminus = CharlottaWeaponObjId.Galatine,
+}
+
+public enum YodarhaEffectWeaponObjId : uint
+{
+    Ascension = YodarhaWeaponObjId.Fudo_Kuniyuki,
+    Terminus = YodarhaWeaponObjId.Swordfish,
+}
+
+public enum NarmayaEffectWeaponObjId : uint
+{
+    Ascension = NarmayaWeaponObjId.Venustas,
+    Terminus = NarmayaWeaponObjId.Ameno_Habakiri,
+}
+
+public enum GhandagozaEffectWeaponObjId : uint
+{
+    Ascension = GhandagozaWeaponObjId.Golden_Fists_of_Ura,
+    Terminus = GhandagozaWeaponObjId.Sky_Piercer,
+}
+
+public enum ZetaEffectWeaponObjId : uint
+{
+    Ascension = ZetaWeaponObjId.Brionac,
+    Terminus = ZetaWeaponObjId.Gae_Bulg,
+}
+
+public enum VaseragaEffectWeaponObjId : uint
+{
+    Ascension = VaseragaWeaponObjId.Wurtzite_Scythe,
+    Terminus = VaseragaWeaponObjId.Ereshkigal,
+}
+
+public enum CagliostroEffectWeaponObjId : uint
+{
+    Ascension = CagliostroWeaponObjId.Transmigration_Tome,
+    Terminus = CagliostroWeaponObjId.Zosimos,
+}
+
+public enum IdEffectWeaponObjId : uint
+{
+    Ascension = IdWeaponObjId.Susanoo,
+    Terminus = IdWeaponObjId.Sword_of_Bahamut,
+}
+
+public enum SandalphonEffectWeaponObjId : uint
+{
+    Terminus = SandalphonWeaponObjId.World_Ender,
+}
+
+public enum SeofonEffectWeaponObjId : uint
+{
+    Terminus = SeofonWeaponObjId.Gateway_Star_Sword,
+}
+
+public enum TweyenEffectWeaponObjId : uint
+{
+    Terminus = TweyenWeaponObjId.Desolation_Crown_Bow,
+}
+#endregion

@@ -46,7 +46,7 @@ namespace gbfr.qol.weaponCustomizationTool.Configuration
     public class CaptainConfig : Configurable<CaptainConfig> // 0000-0100
     {
         #region Sheath Swap
-        [DisplayName("Enable Sheath Swapping")]
+        [DisplayName("Enable Djeeta Sheath Swapping")]
         [Category("Main Settings")]
         [DefaultValue(false)]
         [Description("\nEnables swapping Djeeta's sheaths on her default outfit.\n" +
@@ -2093,8 +2093,8 @@ namespace gbfr.qol.weaponCustomizationTool.Configuration
         [DisplayName("Sandalphon Placeholder2")]
         [Category("Model Swap")]
         [Description("\nAscension\n")]
-        [DefaultValue(SandalphonWeaponObjId.WorldEnder)]
-        public SandalphonWeaponObjId Swap_WorldEnder { get; set; } = SandalphonWeaponObjId.WorldEnder;
+        [DefaultValue(SandalphonWeaponObjId.World_Ender)]
+        public SandalphonWeaponObjId Swap_WorldEnder { get; set; } = SandalphonWeaponObjId.World_Ender;
 #else
         [DisplayName("Apprentice")]
         [Category("Model Swap")]
@@ -2105,8 +2105,8 @@ namespace gbfr.qol.weaponCustomizationTool.Configuration
         [DisplayName("Sandalphon Placeholder2")]
         [Category("Model Swap")]
         [Description("\nAscension\n")]
-        [DefaultValue(AllWeaponObjId.Sandalphon_WorldEnder)]
-        public AllWeaponObjId Swap_WorldEnder { get; set; } = AllWeaponObjId.Sandalphon_WorldEnder;
+        [DefaultValue(AllWeaponObjId.Sandalphon_World_Ender)]
+        public AllWeaponObjId Swap_WorldEnder { get; set; } = AllWeaponObjId.Sandalphon_World_Ender;
 #endif
         #endregion
 
@@ -2203,8 +2203,8 @@ namespace gbfr.qol.weaponCustomizationTool.Configuration
         public override IUpdatableConfigurable[] MakeConfigurations(string configFolder)
         {
             // You can add any Configurable here.
-            return new IUpdatableConfigurable[]
-            {
+            return
+            [
                 Configurable<Config>.FromFile(Path.Combine(configFolder, "Config.json"), "Main Settings - Click here for more settings"),
                 Configurable<CaptainConfig>.FromFile(Path.Combine(configFolder, $"{nameof(CaptainConfig)}.json"), "Captain"),
                 Configurable<KatalinaConfig>.FromFile(Path.Combine(configFolder, $"{nameof(KatalinaConfig)}.json"), "Katalina"),
@@ -2228,7 +2228,7 @@ namespace gbfr.qol.weaponCustomizationTool.Configuration
                 Configurable<SandalphonConfig>.FromFile(Path.Combine(configFolder, $"{nameof(SandalphonConfig)}.json"), "Sandalphon"),
                 Configurable<SeofonConfig>.FromFile(Path.Combine(configFolder, $"{nameof(SeofonConfig)}.json"), "Seofon"),
                 Configurable<TweyenConfig>.FromFile(Path.Combine(configFolder, $"{nameof(TweyenConfig)}.json"), "Tweyen"),
-            };
+            ];
         }
     }
 

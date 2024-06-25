@@ -1,603 +1,581 @@
 ﻿
 using System.Net.Http.Headers;
 
-namespace gbfr.qol.weaponCustomizationTool
+namespace gbfr.qol.weaponCustomizationTool;
+
+/// <summary>
+/// Contains various lists and dictionaries for referencing weapons that have effects
+/// </summary>
+public class WeaponEffects
 {
-    public class WeaponEffects
+    /// <summary>
+    /// Only used for formatting Est filenames in SaveDataEstDictionary
+    /// </summary>
+    private static readonly List<string> EffectSavedataEstPathFormats =
+    [
+            "effect/savedata/{0}/2000.est", // 0
+            "effect/savedata/{0}/2005.est", // 1
+            "effect/savedata/{0}/2010.est", // 2
+            "effect/savedata/{0}/2020.est", // 3
+            "effect/savedata/{0}/2110.est", // 4
+            "effect/savedata/{0}/2120.est", // 5
+            "effect/savedata/{0}/2001.est", // 6, only used by Narmaya's Terminus
+            "effect/savedata/{0}/2002.est", // 7, only used by Narmaya's Terminus
+    ];
+
+    /// <summary>
+    /// Key = Character ObjId<br />
+    /// Value = Ascension Weapon ObjId
+    /// </summary>    
+    public static Dictionary<eObjId, eObjId> AscensionWeapons { get; } = new()
     {
-        private static readonly List<string> formats = new()
-        {
-                "effect/savedata/{0}/2000.est", // 0
-                "effect/savedata/{0}/2005.est", // 1
-                "effect/savedata/{0}/2010.est", // 2
-                "effect/savedata/{0}/2020.est", // 3
-                "effect/savedata/{0}/2110.est", // 4
-                "effect/savedata/{0}/2120.est", // 5
-                "effect/savedata/{0}/2001.est", // 6, only used by Narmaya's Terminus
-                "effect/savedata/{0}/2002.est", // 7, only used by Narmaya's Terminus
-        };
+        { eObjId.PL_Gran_Rebel,         eObjId.WP_Captain_Sword_of_Eos              },
+        { eObjId.PL_Gran_Original,      eObjId.WP_Captain_Sword_of_Eos              },
+        { eObjId.PL_Djeeta_Rebel,       eObjId.WP_Captain_Sword_of_Eos              },
+        { eObjId.PL_Djeeta_Original,    eObjId.WP_Captain_Sword_of_Eos              },
+        { eObjId.PL_Katalina,           eObjId.WP_Katalina_Murgleis                 },
+        { eObjId.PL_Rackam,             eObjId.WP_Rackam_Benedia                    },
+        { eObjId.PL_Io,                 eObjId.WP_Io_Gambanteinn                    },
+        { eObjId.PL_Eugen,              eObjId.WP_Eugen_AK4A                        },
+        { eObjId.PL_Rosetta,            eObjId.WP_Rosetta_Love_Eternal              },
+        { eObjId.PL_Ferry,              eObjId.WP_Ferry_Erinnerung                  },
+        { eObjId.PL_Lancelot,           eObjId.WP_Lancelot_Knight_of_Ice            },
+        { eObjId.PL_Vane,               eObjId.WP_Vane_Treuer_Krieger               },
+        { eObjId.PL_Percival,           eObjId.WP_Percival_Lord_of_Flames           },
+        { eObjId.PL_Siegfried,          eObjId.WP_Siegfried_Ascalon                 },
+        { eObjId.PL_Charlotta,          eObjId.WP_Charlotta_Claidheamh_Soluis       },
+        { eObjId.PL_Yodarha,            eObjId.WP_Yodarha_Fudo_Kuniyuki             },
+        { eObjId.PL_Narmaya,            eObjId.WP_Narmaya_Venustas                  },
+        { eObjId.PL_Ghandagoza,         eObjId.WP_Ghandagoza_Golden_Fists_of_Ura    },
+        { eObjId.PL_Zeta,               eObjId.WP_Zeta_Brionac                      },
+        { eObjId.PL_Vaseraga,           eObjId.WP_Vaseraga_Wurtzite_Scythe          },
+        { eObjId.PL_Cagliostro,         eObjId.WP_Cagliostro_Transmigration_Tome    },
+        { eObjId.PL_Id,                 eObjId.WP_Id_Susanoo                        },
+    };
 
-        public static Dictionary<string, string> AscensionWeapons()
+    public static Dictionary<eObjId, eObjId> TerminusWeapons { get; } = new()
+    {
+        {eObjId.PL_Gran_Rebel,      eObjId.WP_Captain_Seven_Star_Sword          },
+        {eObjId.PL_Gran_Original,   eObjId.WP_Captain_Seven_Star_Sword          },
+        {eObjId.PL_Djeeta_Rebel,    eObjId.WP_Captain_Seven_Star_Sword          },
+        {eObjId.PL_Djeeta_Original, eObjId.WP_Captain_Seven_Star_Sword          },
+        {eObjId.PL_Katalina,        eObjId.WP_Katalina_Blutgang                 },
+        {eObjId.PL_Rackam,          eObjId.WP_Rackam_Freikugel                  },
+        {eObjId.PL_Io,              eObjId.WP_Io_Caduceus                       },
+        {eObjId.PL_Eugen,           eObjId.WP_Eugen_Draconic_Fire               },
+        {eObjId.PL_Rosetta,         eObjId.WP_Rosetta_Dagger_of_Bahamut_Coda    },
+        {eObjId.PL_Ferry,           eObjId.WP_Ferry_Ethereal_Lasher             },
+        {eObjId.PL_Lancelot,        eObjId.WP_Lancelot_Damascus_Knife           },
+        {eObjId.PL_Vane,            eObjId.WP_Vane_Mjolnir                      },
+        {eObjId.PL_Percival,        eObjId.WP_Percival_Gottfried                },
+        {eObjId.PL_Siegfried,       eObjId.WP_Siegfried_Balmung                 },
+        {eObjId.PL_Charlotta,       eObjId.WP_Charlotta_Galatine                },
+        {eObjId.PL_Yodarha,         eObjId.WP_Yodarha_Swordfish                 },
+        {eObjId.PL_Narmaya,         eObjId.WP_Narmaya_Ameno_Habakiri            },
+        {eObjId.PL_Ghandagoza,      eObjId.WP_Ghandagoza_Sky_Piercer            },
+        {eObjId.PL_Zeta,            eObjId.WP_Zeta_Gae_Bulg                     },
+        {eObjId.PL_Vaseraga,        eObjId.WP_Vaseraga_Ereshkigal               },
+        {eObjId.PL_Cagliostro,      eObjId.WP_Cagliostro_Zosimos                },
+        {eObjId.PL_Id,              eObjId.WP_Id_Sword_of_Bahamut               },
+        {eObjId.PL_Sandalphon,      eObjId.WP_Sandalphon_World_Ender            },
+        {eObjId.PL_Seofon,          eObjId.WP_Seofon_Gateway_Star_Sword         },
+        {eObjId.PL_Tweyen,          eObjId.WP_Tweyen_Desolation_Crown_Bow       },
+    };
+
+    public static Dictionary<eObjId, Dictionary<string, eObjId>> ExtraEffects { get; } = new()
+    {
         {
-            Dictionary<string, string> ascensionWeapons = new()
+            eObjId.PL_Ferry, new()
             {
-                { "Captain",    "wp0002" }, // Sword of Eos
-                { "Katalina",   "wp0202" }, // Murgleis
-                { "Rackam",     "wp0302" }, // Benedia
-                { "Io",         "wp0402" }, // Gambanteinn
-                { "Eugen",      "wp0502" }, // Ak-4A
-                { "Rosetta",    "wp0602" }, // Love Eternal
-                { "Ferry",      "wp0705" }, // Erinnerung
-                { "Lancelot",   "wp0804" }, // Knight of Ice
-                { "Vane",       "wp0902" }, // Treuer Krieger
-                { "Percival",   "wp1004" }, // Lord of Flames
-                { "Siegfried",  "wp1102" }, // Ascalon
-                { "Charlotta",  "wp1202" }, // Claidheamh Soluis
-                { "Yodarha",    "wp1302" }, // Fudo-Kuniyuki
-                { "Narmaya",    "wp1402" }, // Venustas
-                { "Ghandagoza", "wp1503" }, // Golden Fists of Ura
-                { "Zeta",       "wp1602" }, // Brionac
-                { "Vaseraga",   "wp1702" }, // Wurtzite Scythe
-                { "Cagliostro", "wp1802" }, // Transmigration Tome
-                { "Id",         "wp1902" }, // Susanoo
-            };
-
-            return ascensionWeapons;
-        }
-
-        public static Dictionary<string, string> TerminusWeapons()
+                { "Ghostly", eObjId.WP_Ferry_Geisterpeitche },
+                { "Flame", eObjId.WP_Ferry_Flame_Lit_Curl },
+                { "Electric", eObjId.WP_Ferry_Live_Wire },
+            }
+        },
         {
-            Dictionary<string, string> terminusWeapons = new()
+            eObjId.PL_Rosetta, new()
             {
-                { "Captain",    "wp0005" }, // Seven-Star Sword
-                { "Katalina",   "wp0205" }, // Blutgang
-                { "Rackam",     "wp0305" }, // Freikugel
-                { "Io",         "wp0405" }, // Caduceus
-                { "Eugen",      "wp0505" }, // Draconic Fire
-                { "Rosetta",    "wp0605" }, // Dagger of Bahamut Coda
-                { "Ferry",      "wp0702" }, // Ethereal Lasher
-                { "Lancelot",   "wp0805" }, // Damascus Knife
-                { "Vane",       "wp0905" }, // Mjolnir
-                { "Percival",   "wp1005" }, // Gottfried
-                { "Siegfried",  "wp1105" }, // Balmung
-                { "Charlotta",  "wp1205" }, // Galatine
-                { "Yodarha",    "wp1305" }, // Swordfish
-                { "Narmaya",    "wp1405" }, // Ameno Habakiri
-                { "Ghandagoza", "wp1505" }, // Sky Piercer
-                { "Zeta",       "wp1605" }, // Gae Bulg
-                { "Vaseraga",   "wp1705" }, // Ereshkigal
-                { "Cagliostro", "wp1805" }, // Zosimos
-                { "Id",         "wp1905" }, // Sword of Bahamut
-                { "Sandalphon", "wp2106" }, // World Ender
-                { "Seofon",     "wp2206" }, // Gateway-Star Sword
-                { "Tweyen",     "wp2306" }, // Desolation-Crown Bow
-            };
+                { "Flame", eObjId.WP_Rosetta_Cortana },
+            }
+        },
+    };
 
-            return terminusWeapons;
-        }
+    /// <summary>
+    /// <para>List of all weapon model IDs that use glow effects.</para>
+    /// Some weapons aren't included which only use CallSelector.bxm effects.<br />
+    /// Those are stored and controlled separately from standard glow effects.
+    /// </summary>
+    public static List<eObjId> AllGlowWeapons { get; } =
+    [
+        AscensionWeapons[eObjId.PL_Gran_Rebel],
+        TerminusWeapons[eObjId.PL_Gran_Rebel],
+        AscensionWeapons[eObjId.PL_Katalina],
+        TerminusWeapons[eObjId.PL_Katalina],
+        AscensionWeapons[eObjId.PL_Rackam],
+        TerminusWeapons[eObjId.PL_Rackam],
+        AscensionWeapons[eObjId.PL_Io],
+        TerminusWeapons[eObjId.PL_Io],
+        AscensionWeapons[eObjId.PL_Eugen],
+        TerminusWeapons[eObjId.PL_Eugen],
+        AscensionWeapons[eObjId.PL_Rosetta],
+        ExtraEffects[eObjId.PL_Rosetta]["Flame"],
+        TerminusWeapons[eObjId.PL_Rosetta],
+        ExtraEffects[eObjId.PL_Ferry]["Ghostly"],
+        AscensionWeapons[eObjId.PL_Ferry],
+        ExtraEffects[eObjId.PL_Ferry]["Flame"],
+        ExtraEffects[eObjId.PL_Ferry]["Electric"],
+        TerminusWeapons[eObjId.PL_Ferry],
+        AscensionWeapons[eObjId.PL_Lancelot],
+        TerminusWeapons[eObjId.PL_Lancelot],
+        AscensionWeapons[eObjId.PL_Vane],
+        TerminusWeapons[eObjId.PL_Vane],
+        AscensionWeapons[eObjId.PL_Percival],
+        TerminusWeapons[eObjId.PL_Percival],
+        AscensionWeapons[eObjId.PL_Siegfried],
+        TerminusWeapons[eObjId.PL_Siegfried],
+        AscensionWeapons[eObjId.PL_Charlotta],
+        TerminusWeapons[eObjId.PL_Charlotta],
+        AscensionWeapons[eObjId.PL_Yodarha],
+        TerminusWeapons[eObjId.PL_Yodarha],
+        AscensionWeapons[eObjId.PL_Narmaya],
+        TerminusWeapons[eObjId.PL_Narmaya],
+        AscensionWeapons[eObjId.PL_Ghandagoza],
+        TerminusWeapons[eObjId.PL_Ghandagoza],
+        AscensionWeapons[eObjId.PL_Zeta],
+        TerminusWeapons[eObjId.PL_Zeta],
+        AscensionWeapons[eObjId.PL_Vaseraga],
+        TerminusWeapons[eObjId.PL_Vaseraga],
+        AscensionWeapons[eObjId.PL_Cagliostro],
+        TerminusWeapons[eObjId.PL_Cagliostro],
+        AscensionWeapons[eObjId.PL_Id],
+        TerminusWeapons[eObjId.PL_Id],
+        TerminusWeapons[eObjId.PL_Sandalphon],
+        TerminusWeapons[eObjId.PL_Seofon],
+        TerminusWeapons[eObjId.PL_Tweyen],
+    ];
 
-        public static Dictionary<string, string> FerryGlowWeapons()
+    /// <summary>
+    /// Suffixes for the EstId values in CallSelector.bxm
+    /// </summary>
+    /// <returns></returns>
+    public static Dictionary<eObjId, char> FerryCallSelectorSuffixes { get; } = new()
+    {
+        { ExtraEffects[eObjId.PL_Ferry]["Ghostly"],     '0' }, // wp0700
+        { eObjId.WP_Ferry_Leather_Belt,                 '0' }, // Leather belt, doesn't have normal effects only a callselector/attack effect
+        { TerminusWeapons[eObjId.PL_Ferry],             '4' }, // wp0702, only character to have a weird terminus number
+        { ExtraEffects[eObjId.PL_Ferry]["Flame"],       '2' }, // wp0703
+        { ExtraEffects[eObjId.PL_Ferry]["Electric"],    '3' }, // wp0704
+        { AscensionWeapons[eObjId.PL_Ferry],            '1' }, // wp0705
+    };
+
+    /// <summary>
+    /// First key is the weapon ID, either 0x32200u or 0x32206u.<br />
+    /// Key in inner dictionary refers to the first character in the EstId value.<br />
+    /// Value in inner dictionary refers to:<br />
+    /// ⠀⠀Third character in EstId if key = 1<br />
+    /// ⠀⠀Last character in EstId if key = 7
+    /// </summary> // Using whitespace character '⠀' above for indents
+    public static Dictionary<eObjId, Dictionary<char, char>> SeofonCallSelector { get; } = new()
+    {
         {
-            Dictionary<string, string> ferryGlowWeapons = new()
+            // Defender
+            eObjId.WP_Seofon_Sette_di_Spade, new Dictionary<char, char>()
             {
-                { "Ascension",      AscensionWeapons()["Ferry"] },
-                { "Terminus",       TerminusWeapons()["Ferry"] },
-                { "Ghostly",        "wp0700" }, // Geisterpeitche
-                { "Flame",          "wp0703" }, // Flame Lit Curl
-                { "Electric",       "wp0704" }, // Live Wire
-            };
-
-            return ferryGlowWeapons;
-        }
-
-        public static Dictionary<string, string> RosettaGlowWeapons()
+                { '1', '5' },
+                { '7', '0' },
+                //"1050",
+                //"1055",
+                //"1056",
+                //"7510",
+                //"7610",
+            }
+        },
         {
-            Dictionary<string, string> rosettaGlowWeapons = new()
+            // Ascension
+            eObjId.WP_Seofon_Gateway_Star_Sword, new Dictionary<char, char>()
             {
-                { "Ascension",  AscensionWeapons()["Rosetta"] },
-                { "Terminus",   TerminusWeapons()["Rosetta"] },
-                { "Flame",      "wp0604" }, // Cortana
-            };
-
-            return rosettaGlowWeapons;
+                { '1', '6' },
+                { '7', '1' },
+                //"1060",
+                //"1065",
+                //"1066",
+                //"7511",
+                //"7611",
+            }
         }
+    };
 
-        public static List<string> AllGlowWeapons()
+    public static Dictionary<eObjId, List<string>> EffectDictionary { get; } = new()
+    {
         {
-            List<string> allGlowWeapons = new()
+            AscensionWeapons[eObjId.PL_Gran_Rebel],
+            new List<string>()
             {
-                AscensionWeapons()["Captain"],
-                TerminusWeapons()["Captain"],
-                AscensionWeapons()["Katalina"],
-                TerminusWeapons()["Katalina"],
-                AscensionWeapons()["Rackam"],
-                TerminusWeapons()["Rackam"],
-                AscensionWeapons()["Io"],
-                TerminusWeapons()["Io"],
-                AscensionWeapons()["Eugen"],
-                TerminusWeapons()["Eugen"],
-                RosettaGlowWeapons()["Ascension"],
-                RosettaGlowWeapons()["Flame"],
-                RosettaGlowWeapons()["Terminus"],
-                FerryGlowWeapons()["Ghostly"],
-                FerryGlowWeapons()["Ascension"],
-                FerryGlowWeapons()["Flame"],
-                FerryGlowWeapons()["Electric"],
-                FerryGlowWeapons()["Terminus"],
-                AscensionWeapons()["Lancelot"],
-                TerminusWeapons()["Lancelot"],
-                AscensionWeapons()["Vane"],
-                TerminusWeapons()["Vane"],
-                AscensionWeapons()["Percival"],
-                TerminusWeapons()["Percival"],
-                AscensionWeapons()["Siegfried"],
-                TerminusWeapons()["Siegfried"],
-                AscensionWeapons()["Charlotta"],
-                TerminusWeapons()["Charlotta"],
-                AscensionWeapons()["Yodarha"],
-                TerminusWeapons()["Yodarha"],
-                AscensionWeapons()["Narmaya"],
-                TerminusWeapons()["Narmaya"],
-                AscensionWeapons()["Ghandagoza"],
-                TerminusWeapons()["Ghandagoza"],
-                AscensionWeapons()["Zeta"],
-                TerminusWeapons()["Zeta"],
-                AscensionWeapons()["Vaseraga"],
-                TerminusWeapons()["Vaseraga"],
-                AscensionWeapons()["Cagliostro"],
-                TerminusWeapons()["Cagliostro"],
-                AscensionWeapons()["Id"],
-                TerminusWeapons()["Id"],
-                TerminusWeapons()["Sandalphon"],
-                TerminusWeapons()["Seofon"],
-                TerminusWeapons()["Tweyen"],
-            };
-
-            return allGlowWeapons;
-        }
-
-        public static Dictionary<string, char> FerryCallSelectorSuffixes()
+                EffectSavedataEstPathFormats[0],
+                EffectSavedataEstPathFormats[2],
+                EffectSavedataEstPathFormats[3],
+                EffectSavedataEstPathFormats[3],
+                EffectSavedataEstPathFormats[4],
+                EffectSavedataEstPathFormats[5],
+            }
+        },
         {
-            Dictionary<string, char> ferryAttackEffects = new()
+            TerminusWeapons[eObjId.PL_Gran_Rebel],
+            new List<string>()
             {
-                { FerryGlowWeapons()["Ghostly"],    '0' }, // wp0700
-                { "wp0701",                         '0' }, // Leather belt, doesn't have normal effects only a callselector/attack effect
-                { FerryGlowWeapons()["Terminus"],   '4' }, // wp0702, only character to have a weird terminus number
-                { FerryGlowWeapons()["Flame"],      '2' }, // wp0703
-                { FerryGlowWeapons()["Electric"],   '3' }, // wp0704
-                { FerryGlowWeapons()["Ascension"],  '1' }, // wp0705
-            };
-
-            return ferryAttackEffects;
-        }
-
-        /// <summary>
-        /// First key is the weapon ID, either wp2200 or wp2206.<br />
-        /// Key in inner dictionary refers to the first character in the EstId value.<br />
-        /// Value in inner dictionary refers to:<br />
-        /// ⠀⠀Third character in EstId if key = 1<br />
-        /// ⠀⠀Last character in EstId if key = 7
-        /// </summary> // Using whitespace character '⠀' above for indents
-        public static Dictionary<string, Dictionary<char, char>> SeofonCallSelector()
+                EffectSavedataEstPathFormats[2],
+                EffectSavedataEstPathFormats[3],
+                EffectSavedataEstPathFormats[4],
+                EffectSavedataEstPathFormats[5],
+            }
+        },
         {
-            Dictionary<string, Dictionary<char, char>> seofonCallSelector = new ()
+            AscensionWeapons[eObjId.PL_Katalina],
+            new List<string>()
             {
-                { 
-                    "wp2200", // Defender weapon
-                    new Dictionary<char, char>()
-                    {
-                        {
-                            '1', '5'
-                        },
-                        {
-                            '7', '0'
-                        },
-                        //"1050",
-                        //"1055",
-                        //"1056",
-                        //"7510",
-                        //"7610",
-                    }
-                },
-                {
-                    "wp2206", // Ascension weapon
-                    new Dictionary<char, char>()
-                    {
-                        {
-                            '1', '6'
-                        },
-                        {
-                            '7', '1'
-                        },
-                        //"1060",
-                        //"1065",
-                        //"1066",
-                        //"7511",
-                        //"7611",
-                    }
-                }
-            };
-
-            return seofonCallSelector;
-        }
-
-        public static Dictionary<string, List<string>> EffectDictionary()// => effectFiles = new()
+                EffectSavedataEstPathFormats[2],
+                EffectSavedataEstPathFormats[3],
+            }
+        },
         {
-            Dictionary<string, List<string>> effectFiles = new Dictionary<string, List<string>>()
+            TerminusWeapons[eObjId.PL_Katalina],
+            new List<string>()
             {
-                {
-                    AscensionWeapons()["Captain"],
-                    new List<string>()
-                    {
-                        formats[0],
-                        formats[2],
-                        formats[3],
-                        formats[3],
-                        formats[4],
-                        formats[5],
-                    }
-                },
-                {
-                    TerminusWeapons()["Captain"],
-                    new List<string>()
-                    {
-                        formats[2],
-                        formats[3],
-                        formats[4],
-                        formats[5],
-                    }
-                },
-                {
-                    AscensionWeapons()["Katalina"],
-                    new List<string>()
-                    {
-                        formats[2],
-                        formats[3],
-                    }
-                },
-                {
-                    TerminusWeapons()["Katalina"],
-                    new List<string>()
-                    {
-                        formats[2],
-                        formats[3],
-                    }
-                },
-                {
-                    AscensionWeapons()["Rackam"],
-                    new List<string>()
-                    {
-                        formats[2],
-                        formats[3],
-                    }
-                },
-                {
-                    TerminusWeapons()["Rackam"],
-                    new List<string>()
-                    {
-                        formats[2],
-                        formats[3],
-                    }
-                },
-                {
-                    AscensionWeapons()["Io"],
-                    new List<string>()
-                    {
-                        formats[2],
-                        formats[3],
-                    }
-                },
-                {
-                    TerminusWeapons()["Io"],
-                    new List<string>()
-                    {
-                        formats[2],
-                        formats[3],
-                    }
-                },
-                {
-                    AscensionWeapons()["Eugen"],
-                    new List<string>()
-                    {
-                        formats[2],
-                        formats[3],
-                    }
-                },
-                {
-                    TerminusWeapons()["Eugen"],
-                    new List<string>()
-                    {
-                        formats[2],
-                        formats[3],
-                    }
-                },
-                {
-                    AscensionWeapons()["Rosetta"],
-                    new List<string>()
-                    {
-                        formats[2],
-                        formats[3],
-                    }
-                },
-                {
-                    RosettaGlowWeapons()["Flame"],
-                    new List<string>()
-                    {
-                        formats[0],
-                    }
-                },
-                {
-                    TerminusWeapons()["Rosetta"],
-                    new List<string>()
-                    {
-                        formats[2],
-                        formats[3],
-                    }
-                },
-                {
-                    FerryGlowWeapons()["Ghostly"],
-                    new List<string>()
-                    {
-                        formats[0],
-                    }
-                },
-                {
-                    AscensionWeapons()["Ferry"],
-                    new List<string>()
-                    {
-                        formats[1],
-                        formats[2],
-                        formats[3],
-                    }
-                },
-                {
-                    FerryGlowWeapons()["Flame"],
-                    new List<string>()
-                    {
-                        formats[0],
-                    }
-                },
-                {
-                    FerryGlowWeapons()["Electric"],
-                    new List<string>()
-                    {
-                        formats[0],
-                        formats[1],
-                    }
-                },
-                {
-                    TerminusWeapons()["Ferry"],
-                    new List<string>()
-                    {
-                        formats[0],
-                        formats[1],
-                        formats[2],
-                        formats[3],
-                    }
-                },
-                {
-                    AscensionWeapons()["Lancelot"],
-                    new List<string>()
-                    {
-                        formats[2],
-                        formats[3],
-                    }
-                },
-                {
-                    TerminusWeapons()["Lancelot"],
-                    new List<string>()
-                    {
-                        formats[2],
-                        formats[3],
-                    }
-                },
-                {
-                    AscensionWeapons()["Vane"],
-                    new List<string>()
-                    {
-                        formats[2],
-                        formats[3],
-                    }
-                },
-                {
-                    TerminusWeapons()["Vane"],
-                    new List<string>()
-                    {
-                        formats[0],
-                        formats[2],
-                        formats[3],
-                    }
-                },
-                {
-                    AscensionWeapons()["Percival"],
-                    new List<string>()
-                    {
-                        formats[2],
-                        formats[3],
-                    }
-                },
-                {
-                    TerminusWeapons()["Percival"],
-                    new List<string>()
-                    {
-                        formats[2],
-                        formats[3],
-                    }
-                },
-                {
-                    AscensionWeapons()["Siegfried"],
-                    new List<string>()
-                    {
-                        formats[2],
-                        formats[3],
-                    }
-                },
-                {
-                    TerminusWeapons()["Siegfried"],
-                    new List<string>()
-                    {
-                        formats[2],
-                        formats[3],
-                    }
-                },
-                {
-                    AscensionWeapons()["Charlotta"],
-                    new List<string>()
-                    {
-                        formats[2],
-                        formats[3],
-                    }
-                },
-                {
-                    TerminusWeapons()["Charlotta"],
-                    new List<string>()
-                    {
-                        formats[2],
-                        formats[3],
-                    }
-                },
-                {
-                    AscensionWeapons()["Yodarha"],
-                    new List<string>()
-                    {
-                        formats[2],
-                        formats[3],
-                    }
-                },
-                {
-                    TerminusWeapons()["Yodarha"],
-                    new List<string>()
-                    {
-                        formats[2],
-                        formats[3],
-                    }
-                },
-                {
-                    AscensionWeapons()["Narmaya"],
-                    new List<string>()
-                    {
-                        formats[2],
-                        formats[3],
-                    }
-                },
-                {
-                    TerminusWeapons()["Narmaya"],
-                    new List<string>()
-                    {
-                        formats[0],
-                        formats[6],
-                        formats[7],
-                        formats[2],
-                        formats[3],
-                    }
-                },
-                {
-                    AscensionWeapons()["Ghandagoza"],
-                    new List<string>()
-                    {
-                        formats[2],
-                        formats[3],
-                    }
-                },
-                {
-                    TerminusWeapons()["Ghandagoza"],
-                    new List<string>()
-                    {
-                        formats[2],
-                        formats[3],
-                    }
-                },
-                {
-                    AscensionWeapons()["Zeta"],
-                    new List<string>()
-                    {
-                        formats[2],
-                        formats[3],
-                    }
-                },
-                {
-                    TerminusWeapons()["Zeta"],
-                    new List<string>()
-                    {
-                        formats[2],
-                        formats[3],
-                    }
-                },
-                {
-                    AscensionWeapons()["Vaseraga"],
-                    new List<string>()
-                    {
-                        formats[2],
-                        formats[3],
-                    }
-                },
-                {
-                    TerminusWeapons()["Vaseraga"],
-                    new List<string>()
-                    {
-                        formats[2],
-                        formats[3],
-                    }
-                },
-                {
-                    AscensionWeapons()["Cagliostro"],
-                    new List<string>()
-                    {
-                        formats[2],
-                        formats[3],
-                    }
-                },
-                {
-                    TerminusWeapons()["Cagliostro"],
-                    new List<string>()
-                    {
-                        formats[2],
-                        formats[3],
-                    }
-                },
-                {
-                    AscensionWeapons()["Id"],
-                    new List<string>()
-                    {
-                        formats[2],
-                        formats[3],
-                    }
-                },
-                {
-                    TerminusWeapons()["Id"],
-                    new List<string>()
-                    {
-                        formats[2],
-                        formats[3],
-                    }
-                },
-                {
-                    TerminusWeapons()["Sandalphon"],
-                    new List<string>()
-                    {
-                        formats[2],
-                        formats[3],
-                    }
-                },
-                {
-                    TerminusWeapons()["Seofon"],
-                    new List<string>()
-                    {
-                        formats[2],
-                        formats[3],
-                    }
-                },
-                {
-                    TerminusWeapons()["Tweyen"],
-                    new List<string>()
-                    {
-                        formats[2],
-                        formats[3],
-                    }
-                }
-            };
-
-            return effectFiles;
+                EffectSavedataEstPathFormats[2],
+                EffectSavedataEstPathFormats[3],
+            }
+        },
+        {
+            AscensionWeapons[eObjId.PL_Rackam],
+            new List<string>()
+            {
+                EffectSavedataEstPathFormats[2],
+                EffectSavedataEstPathFormats[3],
+            }
+        },
+        {
+            TerminusWeapons[eObjId.PL_Rackam],
+            new List<string>()
+            {
+                EffectSavedataEstPathFormats[2],
+                EffectSavedataEstPathFormats[3],
+            }
+        },
+        {
+            AscensionWeapons[eObjId.PL_Io],
+            new List<string>()
+            {
+                EffectSavedataEstPathFormats[2],
+                EffectSavedataEstPathFormats[3],
+            }
+        },
+        {
+            TerminusWeapons[eObjId.PL_Io],
+            new List<string>()
+            {
+                EffectSavedataEstPathFormats[2],
+                EffectSavedataEstPathFormats[3],
+            }
+        },
+        {
+            AscensionWeapons[eObjId.PL_Eugen],
+            new List<string>()
+            {
+                EffectSavedataEstPathFormats[2],
+                EffectSavedataEstPathFormats[3],
+            }
+        },
+        {
+            TerminusWeapons[eObjId.PL_Eugen],
+            new List<string>()
+            {
+                EffectSavedataEstPathFormats[2],
+                EffectSavedataEstPathFormats[3],
+            }
+        },
+        {
+            AscensionWeapons[eObjId.PL_Rosetta],
+            new List<string>()
+            {
+                EffectSavedataEstPathFormats[2],
+                EffectSavedataEstPathFormats[3],
+            }
+        },
+        {
+            ExtraEffects[eObjId.PL_Rosetta]["Flame"],
+            new List<string>()
+            {
+                EffectSavedataEstPathFormats[0],
+            }
+        },
+        {
+            TerminusWeapons[eObjId.PL_Rosetta],
+            new List<string>()
+            {
+                EffectSavedataEstPathFormats[2],
+                EffectSavedataEstPathFormats[3],
+            }
+        },
+        {
+            ExtraEffects[eObjId.PL_Ferry]["Ghostly"],
+            new List<string>()
+            {
+                EffectSavedataEstPathFormats[0],
+            }
+        },
+        {
+            AscensionWeapons[eObjId.PL_Ferry],
+            new List<string>()
+            {
+                EffectSavedataEstPathFormats[1],
+                EffectSavedataEstPathFormats[2],
+                EffectSavedataEstPathFormats[3],
+            }
+        },
+        {
+            ExtraEffects[eObjId.PL_Ferry]["Flame"],
+            new List<string>()
+            {
+                EffectSavedataEstPathFormats[0],
+            }
+        },
+        {
+            ExtraEffects[eObjId.PL_Ferry]["Electric"],
+            new List<string>()
+            {
+                EffectSavedataEstPathFormats[0],
+                EffectSavedataEstPathFormats[1],
+            }
+        },
+        {
+            TerminusWeapons[eObjId.PL_Ferry],
+            new List<string>()
+            {
+                EffectSavedataEstPathFormats[0],
+                EffectSavedataEstPathFormats[1],
+                EffectSavedataEstPathFormats[2],
+                EffectSavedataEstPathFormats[3],
+            }
+        },
+        {
+            AscensionWeapons[eObjId.PL_Lancelot],
+            new List<string>()
+            {
+                EffectSavedataEstPathFormats[2],
+                EffectSavedataEstPathFormats[3],
+            }
+        },
+        {
+            TerminusWeapons[eObjId.PL_Lancelot],
+            new List<string>()
+            {
+                EffectSavedataEstPathFormats[2],
+                EffectSavedataEstPathFormats[3],
+            }
+        },
+        {
+            AscensionWeapons[eObjId.PL_Vane],
+            new List<string>()
+            {
+                EffectSavedataEstPathFormats[2],
+                EffectSavedataEstPathFormats[3],
+            }
+        },
+        {
+            TerminusWeapons[eObjId.PL_Vane],
+            new List<string>()
+            {
+                EffectSavedataEstPathFormats[0],
+                EffectSavedataEstPathFormats[2],
+                EffectSavedataEstPathFormats[3],
+            }
+        },
+        {
+            AscensionWeapons[eObjId.PL_Percival],
+            new List<string>()
+            {
+                EffectSavedataEstPathFormats[2],
+                EffectSavedataEstPathFormats[3],
+            }
+        },
+        {
+            TerminusWeapons[eObjId.PL_Percival],
+            new List<string>()
+            {
+                EffectSavedataEstPathFormats[2],
+                EffectSavedataEstPathFormats[3],
+            }
+        },
+        {
+            AscensionWeapons[eObjId.PL_Siegfried],
+            new List<string>()
+            {
+                EffectSavedataEstPathFormats[2],
+                EffectSavedataEstPathFormats[3],
+            }
+        },
+        {
+            TerminusWeapons[eObjId.PL_Siegfried],
+            new List<string>()
+            {
+                EffectSavedataEstPathFormats[2],
+                EffectSavedataEstPathFormats[3],
+            }
+        },
+        {
+            AscensionWeapons[eObjId.PL_Charlotta],
+            new List<string>()
+            {
+                EffectSavedataEstPathFormats[2],
+                EffectSavedataEstPathFormats[3],
+            }
+        },
+        {
+            TerminusWeapons[eObjId.PL_Charlotta],
+            new List<string>()
+            {
+                EffectSavedataEstPathFormats[2],
+                EffectSavedataEstPathFormats[3],
+            }
+        },
+        {
+            AscensionWeapons[eObjId.PL_Yodarha],
+            new List<string>()
+            {
+                EffectSavedataEstPathFormats[2],
+                EffectSavedataEstPathFormats[3],
+            }
+        },
+        {
+            TerminusWeapons[eObjId.PL_Yodarha],
+            new List<string>()
+            {
+                EffectSavedataEstPathFormats[2],
+                EffectSavedataEstPathFormats[3],
+            }
+        },
+        {
+            AscensionWeapons[eObjId.PL_Narmaya],
+            new List<string>()
+            {
+                EffectSavedataEstPathFormats[2],
+                EffectSavedataEstPathFormats[3],
+            }
+        },
+        {
+            TerminusWeapons[eObjId.PL_Narmaya],
+            new List<string>()
+            {
+                EffectSavedataEstPathFormats[0],
+                EffectSavedataEstPathFormats[6],
+                EffectSavedataEstPathFormats[7],
+                EffectSavedataEstPathFormats[2],
+                EffectSavedataEstPathFormats[3],
+            }
+        },
+        {
+            AscensionWeapons[eObjId.PL_Ghandagoza],
+            new List<string>()
+            {
+                EffectSavedataEstPathFormats[2],
+                EffectSavedataEstPathFormats[3],
+            }
+        },
+        {
+            TerminusWeapons[eObjId.PL_Ghandagoza],
+            new List<string>()
+            {
+                EffectSavedataEstPathFormats[2],
+                EffectSavedataEstPathFormats[3],
+            }
+        },
+        {
+            AscensionWeapons[eObjId.PL_Zeta],
+            new List<string>()
+            {
+                EffectSavedataEstPathFormats[2],
+                EffectSavedataEstPathFormats[3],
+            }
+        },
+        {
+            TerminusWeapons[eObjId.PL_Zeta],
+            new List<string>()
+            {
+                EffectSavedataEstPathFormats[2],
+                EffectSavedataEstPathFormats[3],
+            }
+        },
+        {
+            AscensionWeapons[eObjId.PL_Vaseraga],
+            new List<string>()
+            {
+                EffectSavedataEstPathFormats[2],
+                EffectSavedataEstPathFormats[3],
+            }
+        },
+        {
+            TerminusWeapons[eObjId.PL_Vaseraga],
+            new List<string>()
+            {
+                EffectSavedataEstPathFormats[2],
+                EffectSavedataEstPathFormats[3],
+            }
+        },
+        {
+            AscensionWeapons[eObjId.PL_Cagliostro],
+            new List<string>()
+            {
+                EffectSavedataEstPathFormats[2],
+                EffectSavedataEstPathFormats[3],
+            }
+        },
+        {
+            TerminusWeapons[eObjId.PL_Cagliostro],
+            new List<string>()
+            {
+                EffectSavedataEstPathFormats[2],
+                EffectSavedataEstPathFormats[3],
+            }
+        },
+        {
+            AscensionWeapons[eObjId.PL_Id],
+            new List<string>()
+            {
+                EffectSavedataEstPathFormats[2],
+                EffectSavedataEstPathFormats[3],
+            }
+        },
+        {
+            TerminusWeapons[eObjId.PL_Id],
+            new List<string>()
+            {
+                EffectSavedataEstPathFormats[2],
+                EffectSavedataEstPathFormats[3],
+            }
+        },
+        {
+            TerminusWeapons[eObjId.PL_Sandalphon],
+            new List<string>()
+            {
+                EffectSavedataEstPathFormats[2],
+                EffectSavedataEstPathFormats[3],
+            }
+        },
+        {
+            TerminusWeapons[eObjId.PL_Seofon],
+            new List<string>()
+            {
+                EffectSavedataEstPathFormats[2],
+                EffectSavedataEstPathFormats[3],
+            }
+        },
+        {
+            TerminusWeapons[eObjId.PL_Tweyen],
+            new List<string>()
+            {
+                EffectSavedataEstPathFormats[2],
+                EffectSavedataEstPathFormats[3],
+            }
         }
-    }
+    };
 }
