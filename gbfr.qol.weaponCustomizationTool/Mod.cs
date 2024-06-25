@@ -191,7 +191,7 @@ public class Mod : ModBase // <= Do not Remove.
         foreach (var elem in captainIdList)
         {
             // If values are different, SheathSwapToggle is enabled, and the target weapon is from the Captain. Or if values are different, weapon is Partenza, and target weapon is from the Captain.
-            if (elem.Key != elem.Value && (_captain.SheathSwapToggle || elem.Key == eObjId.WP_Captain_Partenza) && Enum.IsDefined(typeof(CaptainWeaponObjId), elem.Value))
+            if (elem.Key != elem.Value && (_captain.SheathSwapToggle || elem.Key == eObjId.WP_Captain_Partenza) && Enum.IsDefined(typeof(CaptainWeaponObjId), (uint)elem.Value))
             {
                 ProcessSheathSwap(captainIdList, eObjId.PL_Djeeta_Original); // Specifically Djeeta's original outfit because it's the only Captain model with multiple sheaths
                 break;
@@ -201,7 +201,7 @@ public class Mod : ModBase // <= Do not Remove.
         foreach (var elem in narmayaIdList)
         {
             // If values are different, SheathSwpToggle is enabled, and the target weapon is from Narmaya
-            if (elem.Key != elem.Value && _narmaya.SheathSwapToggle && Enum.IsDefined(typeof(NarmayaWeaponObjId), elem.Value))
+            if (elem.Key != elem.Value && _narmaya.SheathSwapToggle && Enum.IsDefined(typeof(NarmayaWeaponObjId), (uint)elem.Value))
             {
                 ProcessSheathSwap(narmayaIdList, eObjId.PL_Narmaya);
                 break;
@@ -228,8 +228,8 @@ public class Mod : ModBase // <= Do not Remove.
 
             sourceResult.EffectsObjid = (uint)targetObjId;
 
-            if (Enum.IsDefined(typeof(FerryWeaponObjId), sourceObjId)
-                && Enum.IsDefined(typeof(FerryWeaponObjId), targetObjId)) // If both weapons are from Ferry
+            if (Enum.IsDefined(typeof(FerryWeaponObjId), (uint)sourceObjId)
+                && Enum.IsDefined(typeof(FerryWeaponObjId), (uint)targetObjId)) // If both weapons are from Ferry
             {
                 ProcessCallSelector(sourceObjId, targetObjId);
             }
@@ -282,8 +282,8 @@ public class Mod : ModBase // <= Do not Remove.
                 targetResult.EffectsObjid = sourceEffect; // Does it this way instead of sourceHex to preserve Effect Swap changes
             }
 
-            if ((Enum.IsDefined(typeof(FerryWeaponObjId), sourceUint) && Enum.IsDefined(typeof(FerryWeaponObjId), targetUint))
-                || (Enum.IsDefined(typeof(SeofonWeaponObjId), sourceUint) && Enum.IsDefined(typeof(SeofonWeaponObjId), targetUint))) // If both weapons are from Ferry, or both are from Seofon
+            if ((Enum.IsDefined(typeof(FerryWeaponObjId), sourceUint) && Enum.IsDefined(typeof(FerryWeaponObjId), (uint)targetUint))
+                || (Enum.IsDefined(typeof(SeofonWeaponObjId), sourceUint) && Enum.IsDefined(typeof(SeofonWeaponObjId), (uint)targetUint))) // If both weapons are from Ferry, or both are from Seofon
             {
                 ProcessCallSelector(sourceUint, targetUint);
             }
@@ -374,8 +374,8 @@ public class Mod : ModBase // <= Do not Remove.
         int skipCount = 0;
         foreach (var elem in objIdMap)
         {
-            if ((characterObjId == eObjId.PL_Narmaya && !Enum.IsDefined(typeof(NarmayaWeaponObjId), elem.Value)) || 
-                (characterObjId == eObjId.PL_Djeeta_Original && !Enum.IsDefined(typeof(CaptainWeaponObjId), elem.Value)) || 
+            if ((characterObjId == eObjId.PL_Narmaya && !Enum.IsDefined(typeof(NarmayaWeaponObjId), (uint)elem.Value)) || 
+                (characterObjId == eObjId.PL_Djeeta_Original && !Enum.IsDefined(typeof(CaptainWeaponObjId), (uint)elem.Value)) || 
                 elem.Key == elem.Value)
             {
                 skipCount++;
@@ -412,8 +412,8 @@ public class Mod : ModBase // <= Do not Remove.
 
         foreach (var elem in objIdMap)
         {
-            if ((characterObjId == eObjId.PL_Narmaya && !Enum.IsDefined(typeof(NarmayaWeaponObjId), elem.Value)) ||
-                (characterObjId == eObjId.PL_Djeeta_Rebel && !Enum.IsDefined(typeof(CaptainWeaponObjId), elem.Value)) ||
+            if ((characterObjId == eObjId.PL_Narmaya && !Enum.IsDefined(typeof(NarmayaWeaponObjId), (uint)elem.Value)) ||
+                (characterObjId == eObjId.PL_Djeeta_Rebel && !Enum.IsDefined(typeof(CaptainWeaponObjId), (uint)elem.Value)) ||
                 elem.Key == elem.Value) // Skip if config is set to another character's weapon or the same
             {
                 continue;
