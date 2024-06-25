@@ -150,7 +150,7 @@ public class Mod : ModBase // <= Do not Remove.
             ProcessEffectSwap(weapon.Key, weapon.Value);
 
         foreach (var weapon in modelSwapMap)
-            ProcessModels(weapon.Key, weapon.Value);
+            ProcessModelSwap(weapon.Key, weapon.Value);
 
         byte[] outputBuffer = new byte[ObjReadAppend.Serializer.GetMaxSize(_objRead)];
         int length = ObjReadAppend.Serializer.Write(outputBuffer, _objRead);
@@ -241,20 +241,20 @@ public class Mod : ModBase // <= Do not Remove.
         }
     }
 
-    public void ProcessModels(eObjId sourceUint, eObjId targetUint)
+    public void ProcessModelSwap(eObjId sourceObjId, eObjId targetObjId)
     {
-        if (targetUint == sourceUint)
+        if (targetObjId == sourceObjId)
             return;
 
         try
         {
-            var sourceResult = _objRead.Entries.FirstOrDefault(e => e.SearchObjidKey == (uint)sourceUint);
+            var sourceResult = _objRead.Entries.FirstOrDefault(e => e.SearchObjidKey == (uint)sourceObjId);
 
             if (sourceResult is null)
             {
-                _logger.WriteLine($"Replacing {Utils.ObjIdToModelId(sourceUint)} with {Utils.ObjIdToModelId(targetUint)}. No entry found, making new entry.");
+                _logger.WriteLine($"Replacing {Utils.ObjIdToModelId(sourceObjId)} with {Utils.ObjIdToModelId(targetObjId)}. No entry found, making new entry.");
 
-                sourceResult = NewInfo(sourceUint);
+                sourceResult = NewInfo(sourceObjId);
 
 #if DEBUG_DEFAULT || DEBUG_NORESTRICTIONS
                 _logger.WriteLine($"{sourceResult.SearchObjidKey}");
@@ -262,48 +262,48 @@ public class Mod : ModBase // <= Do not Remove.
             }
             else
             {
-                _logger.WriteLine($"Replacing {Utils.ObjIdToModelId(sourceUint)} with {Utils.ObjIdToModelId(targetUint)}");
+                _logger.WriteLine($"Replacing {Utils.ObjIdToModelId(sourceObjId)} with {Utils.ObjIdToModelId(targetObjId)}");
             }
 
-            if (Utils.HasEffect((eObjId)sourceUint) && !Utils.HasEffect((eObjId)targetUint) && _configuration.ToggleEffectPreservation == true) // Effect preservation
+            if (Utils.HasEffect(sourceObjId) && !Utils.HasEffect(targetObjId) && _configuration.ToggleEffectPreservation == true) // Effect preservation
             {
-                var targetResult = _objRead.Entries.FirstOrDefault(e => e.SearchObjidKey == (uint)targetUint);
+                var targetResult = _objRead.Entries.FirstOrDefault(e => e.SearchObjidKey == (uint)targetObjId);
 
                 var sourceEffect = sourceResult.EffectsObjid;
 
-                _logger.WriteLine($"Preserving {Utils.ObjIdToModelId(sourceUint)} effect, writing to {Utils.ObjIdToModelId(targetUint)}.");
+                _logger.WriteLine($"Preserving {Utils.ObjIdToModelId(sourceObjId)} effect, writing to {Utils.ObjIdToModelId(targetObjId)}.");
 
                 if (targetResult is null)
                 {
-                    targetResult = NewInfo(targetUint);
-                    _logger.WriteLine($"No {Utils.ObjIdToModelId(targetUint)} entry found, making new entry.");
+                    targetResult = NewInfo(targetObjId);
+                    _logger.WriteLine($"No {Utils.ObjIdToModelId(targetObjId)} entry found, making new entry.");
                 }
                 
                 targetResult.EffectsObjid = sourceEffect; // Does it this way instead of sourceHex to preserve Effect Swap changes
             }
 
-            if ((Enum.IsDefined(typeof(FerryWeaponObjId), sourceUint) && Enum.IsDefined(typeof(FerryWeaponObjId), (uint)targetUint))
-                || (Enum.IsDefined(typeof(SeofonWeaponObjId), sourceUint) && Enum.IsDefined(typeof(SeofonWeaponObjId), (uint)targetUint))) // If both weapons are from Ferry, or both are from Seofon
+            if ((Enum.IsDefined(typeof(FerryWeaponObjId), (uint)sourceObjId) && Enum.IsDefined(typeof(FerryWeaponObjId), (uint)targetObjId))
+                || (Enum.IsDefined(typeof(SeofonWeaponObjId), (uint)sourceObjId) && Enum.IsDefined(typeof(SeofonWeaponObjId), (uint)targetObjId))) // If both weapons are from Ferry, or both are from Seofon
             {
-                ProcessCallSelector(sourceUint, targetUint);
+                ProcessCallSelector(sourceObjId, targetObjId);
             }
 
-            sourceResult.ModelObjid = (uint)targetUint;
-            sourceResult.PhysicsObjid = (uint)targetUint;
-            sourceResult.UnkObjid8 = (uint)targetUint;
+            sourceResult.ModelObjid = (uint)targetObjId;
+            sourceResult.PhysicsObjid = (uint)targetObjId;
+            sourceResult.UnkObjid8 = (uint)targetObjId;
         }
         catch (Exception ex)
         {
-            _logger.WriteLine($"[{_modConfig.ModId}] Failed to apply {Utils.ObjIdToModelId(sourceUint)} model patch - {ex.Message}");
+            _logger.WriteLine($"[{_modConfig.ModId}] Failed to apply {Utils.ObjIdToModelId(sourceObjId)} model patch - {ex.Message}");
         }
     }
 
-    public void ProcessEffectControl(eObjId sourceUint, WeaponEffectControlType controlType)
+    public void ProcessEffectControl(eObjId sourceObjId, WeaponEffectControlType controlType)
     {
         if (!_dataManagerRef.TryGetTarget(out IDataManager manager))
             return;
 
-        string sourceName = Utils.ObjIdToModelId(sourceUint);
+        string sourceName = Utils.ObjIdToModelId(sourceObjId);
 
         if (controlType == WeaponEffectControlType.Enabled)
             return;
@@ -529,7 +529,7 @@ public class Mod : ModBase // <= Do not Remove.
             outputBuffer.AsSpan(0, length).ToArray());
     }
 
-    public void ProcessCallSelector(eObjId sourceUint, eObjId targetUint) // callselector.bxm also includes data for Sandalphon and Seofon, unsure what that data is for
+    public void ProcessCallSelector(eObjId sourceObjId, eObjId targetObjId) // callselector.bxm also includes data for Sandalphon and Seofon, unsure what that data is for
     {
         if (!_dataManagerRef.TryGetTarget(out IDataManager manager))
         {
@@ -545,8 +545,8 @@ public class Mod : ModBase // <= Do not Remove.
             return;
         }
 
-        string sourceName = Utils.ObjIdToModelId(sourceUint);
-        string targetName = Utils.ObjIdToModelId(targetUint);
+        string sourceName = Utils.ObjIdToModelId(sourceObjId);
+        string targetName = Utils.ObjIdToModelId(targetObjId);
 
         try
         {
@@ -558,7 +558,7 @@ public class Mod : ModBase // <= Do not Remove.
             var root = xmlDoc["root"];
             string baseString;
 
-            if (WeaponEffects.FerryCallSelectorSuffixes.TryGetValue((eObjId)targetUint, out char targetSuffix))
+            if (WeaponEffects.FerryCallSelectorSuffixes.TryGetValue((eObjId)targetObjId, out char targetSuffix))
             {
                 foreach (XmlNode node in root.ChildNodes)
                 {
@@ -580,7 +580,7 @@ public class Mod : ModBase // <= Do not Remove.
                     }
                 }
             }
-            else if (WeaponEffects.SeofonCallSelector.TryGetValue((eObjId)targetUint, out Dictionary<char, char>? callSelectors))
+            else if (WeaponEffects.SeofonCallSelector.TryGetValue((eObjId)targetObjId, out Dictionary<char, char>? callSelectors))
             {
                 foreach (XmlNode node in root.ChildNodes)
                 {
