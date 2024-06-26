@@ -3,6 +3,9 @@ using System.ComponentModel;
 
 namespace gbfr.qol.weaponCustomizationTool;
 
+/// <summary>
+/// Options for controlling effect visibility.
+/// </summary>
 public enum WeaponEffectControlType
 {
     [Description("Enabled")]
@@ -18,6 +21,11 @@ public enum WeaponEffectControlType
     Disabled,
 }
 
+/// <summary>
+/// Options for toggling effects on or off. Non-ascension/terminus weapons<br />
+/// can only be toggled on or off entirely, so can't use the full<br />
+/// WeaponEffectControlType options.
+/// </summary>
 public enum WeaponEffectToggle
 {
     [Description("Enabled")]

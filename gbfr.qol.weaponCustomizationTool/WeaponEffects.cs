@@ -9,7 +9,7 @@ namespace gbfr.qol.weaponCustomizationTool;
 public class WeaponEffects
 {
     /// <summary>
-    /// Only used for formatting Est filenames in SaveDataEstDictionary
+    /// Only used for formatting Est filenames in GlowEffectEstPathMap
     /// </summary>
     private static readonly List<string> EffectSavedataEstPathFormats =
     [
@@ -53,6 +53,10 @@ public class WeaponEffects
         { eObjId.PL_Id,                 eObjId.WP_Id_Susanoo                        },
     };
 
+    /// <summary>
+    /// Key = Character ObjId<br />
+    /// Value = Terminus Weapon ObjId
+    /// </summary>
     public static Dictionary<eObjId, eObjId> TerminusWeapons { get; } = new()
     {
         {eObjId.PL_Gran_Rebel,      eObjId.WP_Captain_Seven_Star_Sword          },
@@ -82,7 +86,13 @@ public class WeaponEffects
         {eObjId.PL_Tweyen,          eObjId.WP_Tweyen_Desolation_Crown_Bow       },
     };
 
-    public static Dictionary<eObjId, Dictionary<string, eObjId>> ExtraEffects { get; } = new()
+    /// <summary>
+    /// <para>Weapons with glow effects that aren't Ascension or Terminus weapons.</para>
+    /// First Key = Character ObjId<br />
+    /// Second Key = Identifier string: "Ghostly", "Flame", or "Electric"<br />
+    /// Value = Weapon ObjId
+    /// </summary>
+    public static Dictionary<eObjId, Dictionary<string, eObjId>> ExtraGlowEffects { get; } = new()
     {
         {
             eObjId.PL_Ferry, new()
@@ -118,12 +128,12 @@ public class WeaponEffects
         AscensionWeapons[eObjId.PL_Eugen],
         TerminusWeapons[eObjId.PL_Eugen],
         AscensionWeapons[eObjId.PL_Rosetta],
-        ExtraEffects[eObjId.PL_Rosetta]["Flame"],
+        ExtraGlowEffects[eObjId.PL_Rosetta]["Flame"],
         TerminusWeapons[eObjId.PL_Rosetta],
-        ExtraEffects[eObjId.PL_Ferry]["Ghostly"],
+        ExtraGlowEffects[eObjId.PL_Ferry]["Ghostly"],
         AscensionWeapons[eObjId.PL_Ferry],
-        ExtraEffects[eObjId.PL_Ferry]["Flame"],
-        ExtraEffects[eObjId.PL_Ferry]["Electric"],
+        ExtraGlowEffects[eObjId.PL_Ferry]["Flame"],
+        ExtraGlowEffects[eObjId.PL_Ferry]["Electric"],
         TerminusWeapons[eObjId.PL_Ferry],
         AscensionWeapons[eObjId.PL_Lancelot],
         TerminusWeapons[eObjId.PL_Lancelot],
@@ -158,22 +168,22 @@ public class WeaponEffects
     /// Suffixes for the EstId values in CallSelector.bxm
     /// </summary>
     /// <returns></returns>
-    public static Dictionary<eObjId, char> FerryCallSelectorSuffixes { get; } = new()
+    public static Dictionary<eObjId, char> FerryCallSelector { get; } = new()
     {
-        { ExtraEffects[eObjId.PL_Ferry]["Ghostly"],     '0' }, // wp0700
+        { ExtraGlowEffects[eObjId.PL_Ferry]["Ghostly"],     '0' }, // wp0700
         { eObjId.WP_Ferry_Leather_Belt,                 '0' }, // Leather belt, doesn't have normal effects only a callselector/attack effect
         { TerminusWeapons[eObjId.PL_Ferry],             '4' }, // wp0702, only character to have a weird terminus number
-        { ExtraEffects[eObjId.PL_Ferry]["Flame"],       '2' }, // wp0703
-        { ExtraEffects[eObjId.PL_Ferry]["Electric"],    '3' }, // wp0704
+        { ExtraGlowEffects[eObjId.PL_Ferry]["Flame"],       '2' }, // wp0703
+        { ExtraGlowEffects[eObjId.PL_Ferry]["Electric"],    '3' }, // wp0704
         { AscensionWeapons[eObjId.PL_Ferry],            '1' }, // wp0705
     };
 
     /// <summary>
-    /// First key is the weapon ID, either 0x32200u or 0x32206u.<br />
-    /// Key in inner dictionary refers to the first character in the EstId value.<br />
-    /// Value in inner dictionary refers to:<br />
-    /// ⠀⠀Third character in EstId if key = 1<br />
-    /// ⠀⠀Last character in EstId if key = 7
+    /// First Key = Weapon ObjId, either 0x32200u or 0x32206u<br />
+    /// Second Key = First character in the EstId value<br />
+    /// Value =<br />
+    /// ⠀⠀Third character in EstId if Second Key = 1<br />
+    /// ⠀⠀Last character in EstId if Second Key = 7
     /// </summary> // Using whitespace character '⠀' above for indents
     public static Dictionary<eObjId, Dictionary<char, char>> SeofonCallSelector { get; } = new()
     {
@@ -205,7 +215,12 @@ public class WeaponEffects
         }
     };
 
-    public static Dictionary<eObjId, List<string>> EffectDictionary { get; } = new()
+    /// <summary>
+    /// <para>Dictionary of Est filepaths for all weapons that have glow effects.</para>
+    /// Key = Weapon ObjId<br />
+    /// Value = List of Est Paths
+    /// </summary>
+    public static Dictionary<eObjId, List<string>> GlowEffectEstPathMap { get; } = new()
     {
         {
             AscensionWeapons[eObjId.PL_Gran_Rebel],
@@ -302,7 +317,7 @@ public class WeaponEffects
             }
         },
         {
-            ExtraEffects[eObjId.PL_Rosetta]["Flame"],
+            ExtraGlowEffects[eObjId.PL_Rosetta]["Flame"],
             new List<string>()
             {
                 EffectSavedataEstPathFormats[0],
@@ -317,7 +332,7 @@ public class WeaponEffects
             }
         },
         {
-            ExtraEffects[eObjId.PL_Ferry]["Ghostly"],
+            ExtraGlowEffects[eObjId.PL_Ferry]["Ghostly"],
             new List<string>()
             {
                 EffectSavedataEstPathFormats[0],
@@ -333,14 +348,14 @@ public class WeaponEffects
             }
         },
         {
-            ExtraEffects[eObjId.PL_Ferry]["Flame"],
+            ExtraGlowEffects[eObjId.PL_Ferry]["Flame"],
             new List<string>()
             {
                 EffectSavedataEstPathFormats[0],
             }
         },
         {
-            ExtraEffects[eObjId.PL_Ferry]["Electric"],
+            ExtraGlowEffects[eObjId.PL_Ferry]["Electric"],
             new List<string>()
             {
                 EffectSavedataEstPathFormats[0],

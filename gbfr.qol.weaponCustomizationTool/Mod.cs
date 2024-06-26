@@ -78,11 +78,11 @@ public class Mod : ModBase // <= Do not Remove.
 
     private ModelInfo _modelInfo;
 
-    private readonly Dictionary<string, byte[]> _originalFiles = [];
+    private readonly Dictionary<string, byte[]> _originalFiles = []; // For storing archive file data after editing
 
-    private readonly Dictionary<string, byte[]> _workingFiles = [];
+    private readonly Dictionary<string, byte[]> _workingFiles = []; // For storing edited file data so it can be edited in future passes
 
-    public Mod(CustomContext context)
+    public Mod(CustomContext context) // CustomContext required for multi config setups
     {
         _modLoader = context.ModLoader;
         _logger = context.Logger;
@@ -136,8 +136,8 @@ public class Mod : ModBase // <= Do not Remove.
         if (!_dataManagerRef.TryGetTarget(out IDataManager manager))
             return;
 
-        var modelSwapMap = GetModelSwapMap();
-        var effectSwapMap = GetEffectSwapMap();
+        var modelSwapMap = GetModelSwapMap(); // Grabs dictionary of values for swapping models
+        var effectSwapMap = GetEffectSwapMap(); // Grabs dictionary of values for swapping effects
 
         string infoFile = "system/objread/info.objread";
         if (!manager.FileExists(infoFile, includeExternal: false))
@@ -160,7 +160,7 @@ public class Mod : ModBase // <= Do not Remove.
 
         ///----------------------------------------------------------------------------///
 
-        var effectControlMap = GetEffectControlMap();
+        var effectControlMap = GetEffectControlMap(); // Grabs dictionary of values for effect control options
 
         foreach (var weapon in effectControlMap)
             ProcessEffectControl(weapon.Key, weapon.Value);
@@ -190,7 +190,8 @@ public class Mod : ModBase // <= Do not Remove.
 
         foreach (var elem in captainIdList)
         {
-            // If values are different, SheathSwapToggle is enabled, and the target weapon is from the Captain. Or if values are different, weapon is Partenza, and target weapon is from the Captain.
+            // If values are different, SheathSwapToggle is enabled, and the target weapon is from the Captain.
+            // Or if values are different, weapon is Partenza, and target weapon is from the Captain.
             if (elem.Key != elem.Value && (_captain.SheathSwapToggle || elem.Key == eObjId.WP_Captain_Partenza) && Enum.IsDefined(typeof(CaptainWeaponObjId), (uint)elem.Value))
             {
                 ProcessSheathSwap(captainIdList, eObjId.PL_Djeeta_Original); // Specifically Djeeta's original outfit because it's the only Captain model with multiple sheaths
@@ -209,6 +210,12 @@ public class Mod : ModBase // <= Do not Remove.
         }
     }
 
+    /// <summary>
+    /// Swaps effects by editing info.objread entries.<br />
+    /// For Ferry and Seofon it also calls ProcessCallSelector.
+    /// </summary>
+    /// <param name="sourceObjId">Original ObjId</param>
+    /// <param name="targetObjId">Config ObjId</param>
     public void ProcessEffectSwap(eObjId sourceObjId, eObjId targetObjId)
     {
         if (targetObjId == sourceObjId) // If no change
@@ -241,6 +248,12 @@ public class Mod : ModBase // <= Do not Remove.
         }
     }
 
+    /// <summary>
+    /// Swaps models by editing info.objread entries.<br />
+    /// Compatible with modded weapons!
+    /// </summary>
+    /// <param name="sourceObjId">Original ObjId</param>
+    /// <param name="targetObjId">Config ObjId</param>
     public void ProcessModelSwap(eObjId sourceObjId, eObjId targetObjId)
     {
         if (targetObjId == sourceObjId)
@@ -265,7 +278,7 @@ public class Mod : ModBase // <= Do not Remove.
                 _logger.WriteLine($"Replacing {Utils.ObjIdToModelId(sourceObjId)} with {Utils.ObjIdToModelId(targetObjId)}");
             }
 
-            if (Utils.HasEffect(sourceObjId) && !Utils.HasEffect(targetObjId) && _configuration.ToggleEffectPreservation == true) // Effect preservation
+            if (Utils.HasGlowEffect(sourceObjId) && !Utils.HasGlowEffect(targetObjId) && _configuration.ToggleEffectPreservation == true) // Effect preservation
             {
                 var targetResult = _objRead.Entries.FirstOrDefault(e => e.SearchObjidKey == (uint)targetObjId);
 
@@ -298,6 +311,12 @@ public class Mod : ModBase // <= Do not Remove.
         }
     }
 
+    /// <summary>
+    /// Processes effect control config by editing "data\effect\&lt;ObjId&gt;.bxm" files<br />
+    /// Can disable effect entirely, or only disable in combat or out of combat.
+    /// </summary>
+    /// <param name="sourceObjId">Original ObjId</param>
+    /// <param name="controlType">Config ObjId</param>
     public void ProcessEffectControl(eObjId sourceObjId, WeaponEffectControlType controlType)
     {
         if (!_dataManagerRef.TryGetTarget(out IDataManager manager))
@@ -366,6 +385,16 @@ public class Mod : ModBase // <= Do not Remove.
         }
     }
 
+    /// <summary>
+    /// Swaps sheaths by editing player minfo directly.<br />
+    /// Only works for Narmaya and Djeeta Default Outfit.<br />
+    /// Does not work with modded character models, need the ability to read from external files for that.<br />
+    /// </summary>
+    /// <param name="objIdMap">
+    ///     Key = Original ObjId<br />
+    ///     Value = Config ObjId
+    /// </param>
+    /// <param name="characterObjId">Character Model ObjId</param>
     public void ProcessSheathSwap(Dictionary<eObjId, eObjId> objIdMap, eObjId characterObjId)
     {
         if (!_dataManagerRef.TryGetTarget(out IDataManager manager))
@@ -529,6 +558,11 @@ public class Mod : ModBase // <= Do not Remove.
             outputBuffer.AsSpan(0, length).ToArray());
     }
 
+    /// <summary>
+    /// Swaps callselector.bxm effects, which are used by Ferry and Seofon.
+    /// </summary>
+    /// <param name="sourceObjId">Original ObjId</param>
+    /// <param name="targetObjId">Config ObjId</param>
     public void ProcessCallSelector(eObjId sourceObjId, eObjId targetObjId) // callselector.bxm also includes data for Sandalphon and Seofon, unsure what that data is for
     {
         if (!_dataManagerRef.TryGetTarget(out IDataManager manager))
@@ -558,7 +592,7 @@ public class Mod : ModBase // <= Do not Remove.
             var root = xmlDoc["root"];
             string baseString;
 
-            if (WeaponEffects.FerryCallSelectorSuffixes.TryGetValue((eObjId)targetObjId, out char targetSuffix))
+            if (WeaponEffects.FerryCallSelector.TryGetValue((eObjId)targetObjId, out char targetSuffix))
             {
                 foreach (XmlNode node in root.ChildNodes)
                 {
@@ -630,6 +664,11 @@ public class Mod : ModBase // <= Do not Remove.
         }
     }
 
+    /// <summary>
+    /// Creates and returns a new info.objread flatbuffer entry.
+    /// </summary>
+    /// <param name="objId"></param>
+    /// <returns>GBFRDataTools.Flatbuffers.Info newInfo</returns>
     public Info NewInfo(eObjId objId)
     {
         uint hexAlt = (uint)objId & 0xFFFFFF00;
@@ -653,7 +692,7 @@ public class Mod : ModBase // <= Do not Remove.
     /// <summary>
     /// Contains the config settings for swapping models.
     /// </summary>
-    /// <returns>Dictionary&lt;Source ObjId, Config ObjId&gt;</returns>
+    /// <returns>Dictionary&lt;Original ObjId, Config ObjId&gt;</returns>
     public Dictionary<eObjId, eObjId> GetModelSwapMap()
     {
         return new()
@@ -806,7 +845,7 @@ public class Mod : ModBase // <= Do not Remove.
     /// <summary>
     /// Contains the config settings for swapping effects.
     /// </summary>
-    /// <returns>Dictionary&lt;Source ObjId, Config ObjId&gt;</returns>
+    /// <returns>Dictionary&lt;Original ObjId, Config ObjId&gt;</returns>
     public Dictionary<eObjId, eObjId> GetEffectSwapMap()
     {
         return new()
@@ -879,7 +918,7 @@ public class Mod : ModBase // <= Do not Remove.
     /// <summary>
     /// Contains the config settings for controlling effects, such as toggling on or off.
     /// </summary>
-    /// <returns>Dictionary&lt;Source ObjId, Control Type&gt;</returns>
+    /// <returns>Dictionary&lt;Original ObjId, Control Type&gt;</returns>
     public Dictionary<eObjId, WeaponEffectControlType> GetEffectControlMap()
     {
         return new()

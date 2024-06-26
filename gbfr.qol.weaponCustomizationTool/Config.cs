@@ -14,17 +14,17 @@ namespace gbfr.qol.weaponCustomizationTool.Configuration
         [Category("Main Settings")]
         [Description("""
 
-            Keep this enabled if you want to keep effects while using weapons without effects as skins.
+            Leave this enabled if you want to keep effects while using weapons without effects as skins.
             Only one effect can override a single non-effect weapon at a time.
-
-            For example if you use a single non-effect weapon as a skin for both of a character's
-            Ascension and Terminus weapons only the second one loaded (typically Terminus)
-            will show up in game for both weapons.
 
             This works by overriding the non-effect weapon's effect attribute to point at the original
             weapon's effect. It still will not cause non-effect weapons to use effects.
             The effect will only show when the non-effect weapon is being used as
             a skin over a weapon that does have effects.
+
+            For example if you use a single non-effect weapon as a skin for both of a character's
+            Ascension and Terminus weapons only the second one loaded (typically Terminus)
+            will show up in game for both weapons.
 
             Loads after effect swapping and preserves those settings.
 
@@ -35,12 +35,6 @@ namespace gbfr.qol.weaponCustomizationTool.Configuration
             """)]
         [DefaultValue(true)]
         public bool ToggleEffectPreservation { get; set; } = true;
-
-        //[DisplayName("Disable character restrictions")]
-        //[Category("Main Settings")]
-        //[Description("Enable to allow using weapons from other characters as skins")]
-        //[DefaultValue(false)]
-        //public bool ToggleSwapRestrictions { get; set; } = false;
     }
 
     public class CaptainConfig : Configurable<CaptainConfig> // 0000-0100
@@ -2232,6 +2226,9 @@ namespace gbfr.qol.weaponCustomizationTool.Configuration
         }
     }
 
+    /// <summary>
+    /// ModContext override to add additional config classes.
+    /// </summary>
     public class CustomContext : ModContext
     {
         /// <summary>
@@ -2345,6 +2342,9 @@ namespace gbfr.qol.weaponCustomizationTool.Configuration
         public TweyenConfig TweyenModConfig { get; set; } = null!;
     }
 
+    /// <summary>
+    /// ModBase override, necessary for multi config setups that have configs accessible and editable while the game is running.
+    /// </summary>
     //public class CustomModBase : ModBase
     //{
     //    public virtual void ConfigurationUpdated(CaptainConfig configuration) { }

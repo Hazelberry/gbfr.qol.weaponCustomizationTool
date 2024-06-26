@@ -6,16 +6,37 @@ using System.Threading.Tasks;
 
 namespace gbfr.qol.weaponCustomizationTool;
 
+/// <summary>
+/// Utilities mostly for various ObjId conversions and bool checks.
+/// </summary>
 public class Utils
 {
+    /// <summary>
+    /// Checks if the provided weapon has a glow effect.<br />
+    /// Will return false if the weapon only has a callselector effect,
+    /// or if it has no effects.
+    /// </summary>
+    /// <param name="weaponObjId"></param>
+    /// <returns>True or False</returns>
+    public static bool HasGlowEffect(eObjId weaponObjId)
+    {
+        return WeaponEffects.AllGlowWeapons.Contains(weaponObjId);
+    }
+
+    /// <summary>
+    /// Grabs ObjId category uint from full eObjId.
+    /// </summary>
+    /// <param name="objId"></param>
+    /// <returns></returns>
     public static uint GetObjIdCategory(eObjId objId)
         => (uint)objId >> 16;
 
-    public static bool HasEffect(eObjId objId)
-    {
-        return WeaponEffects.AllGlowWeapons.Contains(objId);
-    }
-
+    /// <summary>
+    /// Grabs ObjId category string value from full eObjId.
+    /// </summary>
+    /// <param name="objId"></param>
+    /// <returns>2 letter category string</returns>
+    /// <exception cref="ArgumentException">Invalid object id category</exception>
     public static string GetObjIdCategoryPrefixString(eObjId objId)
     {
         uint category = GetObjIdCategory(objId);
@@ -43,6 +64,11 @@ public class Utils
         };
     }
 
+    /// <summary>
+    /// Converts full eObjId value to its string equivalent.
+    /// </summary>
+    /// <param name="objId"></param>
+    /// <returns>"{category string}{ID number}"</returns>
     public static string ObjIdToModelId(eObjId objId)
     {
         uint modelId = (uint)objId & 0xFFFF;
@@ -51,17 +77,29 @@ public class Utils
         return $"{categoryStr}{modelId:X4}";
     }
 
-    public static bool IsCharacterWeapon(eObjId charaId, eObjId weaponObjId)
+    /// <summary>
+    /// Checks if the provided weapon belongs to the provided character.
+    /// </summary>
+    /// <param name="characterObjId">Character eObjId</param>
+    /// <param name="weaponObjId">Weapon eObjId</param>
+    /// <returns>True or False</returns>
+    /// <exception cref="ArgumentException">Value is either not a character id or not a weapon id</exception>
+    public static bool IsCharacterWeapon(eObjId characterObjId, eObjId weaponObjId)
     {
-        if ((uint)charaId >> 16 != 1)
-            throw new ArgumentException("Not a char id.", nameof(charaId));
+        if ((uint)characterObjId >> 16 != 1)
+            throw new ArgumentException("Not a char id.", nameof(characterObjId));
 
         if ((uint)weaponObjId >> 16 != 3)
             throw new ArgumentException("Not a weapon id.", nameof(weaponObjId));
 
-        return ((uint)charaId & 0x0000FF00) == ((uint)weaponObjId & 0x0000FF00);
+        return ((uint)characterObjId & 0x0000FF00) == ((uint)weaponObjId & 0x0000FF00);
     }
 
+    /// <summary>
+    /// Gets the path for the provided model's minfo file.
+    /// </summary>
+    /// <param name="objId">Model eObjId</param>
+    /// <returns>"model/{category}/{modelId}/{modelId}.minfo"</returns>
     public static string GetObjModelInfoPath(eObjId objId)
     {
         string prefix = GetObjIdCategoryPrefixString(objId);
@@ -69,11 +107,17 @@ public class Utils
         return $"model/{prefix}/{modelId}/{modelId}.minfo";
     }
 
+    /// <summary>
+    /// Returns the matching sheath ID for the provided weapon ObjId.
+    /// </summary>
+    /// <param name="objId">Weapon eObjId</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException">Either the weapon's character doesn't have a supported sheath or the provided ObjId isn't a weapon.</exception>
     public static string ObjIdToSheathId(eObjId objId)
     {
         // Skips Katalina, Gran+Djeeta rebelwear, Gran default, Rosetta, and Yodarha because hiding sheaths is hardcoded into the executable
 
-        /// Weapons that Disable Sheaths
+        /// Weapons that Hide Sheaths
         /// 
         /// Character       | Weapons
         /// ~~~~~~~~~~~~~~~~|~~~~~~~~~~~
@@ -99,7 +143,9 @@ public class Utils
         char sheathPrefix;
         string sheathId;
 
-        if (characterId == eObjId.PL_Gran_Rebel) // only messing with the default outfit but not rebelwear or any of Gran since they have a single large sheath each
+        // Should be noted this is only for retrieving the sheath ID.
+        // ProcessSheathSwap only modifies PL_Djeeta_Original, but WeaponObjIdToCharacterId wouldn't return a matching value for that model.
+        if (characterId == eObjId.PL_Gran_Rebel || characterId == eObjId.PL_Djeeta_Rebel)
         {
             sheathPrefix = 'b';
 
@@ -127,6 +173,12 @@ public class Utils
         return sheathId;
     }
 
+    /// <summary>
+    /// Returns the matching Character eObjId for the provided Weapon eObjId
+    /// </summary>
+    /// <param name="weaponId"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException"></exception>
     public static eObjId WeaponObjIdToCharacterId(eObjId weaponId)
     {
         if ((uint)weaponId >> 16 != 3)
@@ -135,14 +187,22 @@ public class Utils
         return (eObjId)(0x10000 + ((uint)weaponId & 0x0000FF00));
     }
 
+    /// <summary>
+    /// Gets the possible paths for the provided model's files.<br />
+    /// Used for overwriting models directly, but that isn't<br />
+    /// the preferred model swap method. Use info.objread<br />
+    /// editing instead where possible.
+    /// </summary>
+    /// <param name="modelId"></param>
+    /// <returns></returns>
     //static List<string> ObjIdToModelPaths(string modelId)
     //{
     //    string category = modelId[..2];
 
-    //    List<string> paths = new();
+    //    List<string> paths = [];
 
-    //    List<string> filePathFormats = new()
-    //    {
+    //    List<string> filePathFormats =
+    //    [
     //        "model/{0}/{1}/{1}.minfo",
     //        "model/{0}/{1}/{1}.skeleton",
     //        "model/{0}/{1}/vars/0.mmat",
@@ -153,7 +213,7 @@ public class Utils
     //        "model_streaming/shadow_lod0/{0}.mmesh", //Not used by weapons
     //        "model_streaming/shadow_lod1/{0}.mmesh", //Not used by weapons
     //        "model_streaming/shadow_lod2/{0}.mmesh", //Not used by weapons
-    //    };
+    //    ];
 
     //    foreach (var format in filePathFormats)
     //    {
