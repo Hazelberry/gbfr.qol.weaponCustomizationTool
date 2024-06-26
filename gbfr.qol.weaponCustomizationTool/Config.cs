@@ -43,7 +43,8 @@ namespace gbfr.qol.weaponCustomizationTool.Configuration
         [DisplayName("Enable Djeeta Sheath Swapping")]
         [Category("Main Settings")]
         [DefaultValue(false)]
-        [Description("\nEnables swapping Djeeta's sheaths on her default outfit.\n" +
+        [Description("\nEnables swapping Djeeta's sheaths on her default outfit.\n\n" +
+            "Always considered enabled for Partenza since it won't cause clipping issues.\n\n" +
             "If replacing Partenza it will apply the thick sheath and only affect that weapon.\n" +
             "However, replacing any other weapon WITH Partenza will replace the thick sheath for all of her weapons\n" +
             "and those will have noticeable clipping if they were not also swapped to Partenza.\n\n" +
