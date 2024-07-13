@@ -421,7 +421,7 @@ public class Mod : ModBase // <= Do not Remove.
 
         if (characterObjId == eObjId.PL_Narmaya || characterObjId == eObjId.PL_Djeeta_Original)
         {
-            characterMInfo = $"model/pl/pl{characterObjId}/pl{characterObjId}.minfo";
+            characterMInfo = Utils.GetObjModelInfoPath(characterObjId);
         }
         else
         {
